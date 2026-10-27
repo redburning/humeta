@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#073f68"/><g fill="none" stroke="#61d2d1" stroke-width="3" opacity=".72"><path d="M141 179h117M381 179h114M320 117V69M320 241v50"/><path d="m157 109 101 54M381 195l96 55"/></g>
+  <g fill="#eefbfa" stroke="#19a5b3" stroke-width="5"><rect x="77" y="132" width="80" height="95" rx="4"/><circle cx="320" cy="179" r="62"/><path d="M464 130h76v98h-76z"/><path d="M285 49h70v44h-70z"/><path d="M275 268h90v54h-90z"/></g>
+  <g fill="#13829b"><circle cx="320" cy="179" r="20"/><rect x="93" y="157" width="48" height="7"/><rect x="93" y="178" width="35" height="7"/><rect x="480" y="153" width="44" height="7"/><rect x="480" y="174" width="35" height="7"/></g>
+  <text x="34" y="335" fill="#fff" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="3">RESEARCH CONTEXT</text>
+</svg>

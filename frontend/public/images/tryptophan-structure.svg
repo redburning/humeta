@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 190" role="img" aria-labelledby="title description">
+  <title id="title">Tryptophan chemical structure</title>
+  <desc id="description">Indole ring connected to a chiral amino acid side chain with amino and carboxyl groups.</desc>
+  <g fill="none" stroke="#29333a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M32 94 57 51h50l25 43-25 43H57Z" />
+    <path d="M107 51l49 13 17 43-41 30h-25" />
+    <path d="M42 94 63 60h38" />
+    <path d="M42 101 63 128h38" />
+    <path d="M116 61l34 9" />
+    <path d="M161 75l10 27" />
+    <path d="M173 107l37 22 32-19 39 20 41-21" />
+    <path d="M279 127l8-40" />
+    <path d="M287 130l8-40" />
+  </g>
+  <polygon points="242,110 225,68 235,66" fill="#29333a" />
+  <text x="118" y="153" fill="#1976b9" font-family="Arial, sans-serif" font-size="19" font-weight="600">NH</text>
+  <text x="201" y="60" fill="#1976b9" font-family="Arial, sans-serif" font-size="19" font-weight="600">NH2</text>
+  <text x="282" y="80" fill="#d64949" font-family="Arial, sans-serif" font-size="20" font-weight="600">O</text>
+  <text x="321" y="113" fill="#d64949" font-family="Arial, sans-serif" font-size="19" font-weight="600">OH</text>
+</svg>

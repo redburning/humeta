@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#e6f1f4"/><rect x="56" y="52" width="528" height="256" rx="5" fill="#fff" stroke="#75b8c5" stroke-width="3"/>
+  <rect x="56" y="52" width="528" height="39" fill="#075f88"/><g fill="#8cd4d6"><circle cx="80" cy="71" r="5"/><circle cx="98" cy="71" r="5"/><circle cx="116" cy="71" r="5"/></g>
+  <rect x="80" y="116" width="126" height="162" fill="#edf7f7"/><g fill="#8ab2bd"><rect x="98" y="139" width="82" height="8"/><rect x="98" y="165" width="63" height="8"/><rect x="98" y="191" width="89" height="8"/></g>
+  <g fill="#fff" stroke="#38a7b5" stroke-width="2"><rect x="230" y="116" width="145" height="67"/><rect x="398" y="116" width="145" height="67"/><rect x="230" y="204" width="145" height="67"/><rect x="398" y="204" width="145" height="67"/></g>
+  <g fill="#176e8d"><circle cx="253" cy="140" r="9"/><circle cx="421" cy="140" r="9"/><circle cx="253" cy="228" r="9"/><circle cx="421" cy="228" r="9"/></g>
+  <text x="70" y="337" fill="#18495d" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="3">BROWSER</text>
+</svg>

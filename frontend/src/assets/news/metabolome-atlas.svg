@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e8f6f3"/><stop offset="1" stop-color="#a9dce1"/></linearGradient></defs>
+  <rect width="640" height="360" fill="url(#bg)"/><g fill="none" stroke="#178aa2" stroke-width="2" opacity=".42"><circle cx="320" cy="170" r="118"/><circle cx="320" cy="170" r="82"/><path d="M202 170h236M320 52v236M236 87l168 166M404 87 236 253"/></g>
+  <path d="M320 73c-20 0-35 16-35 36 0 16 9 29 23 34-7 15-13 34-13 57v62h50v-62c0-23-6-42-13-57 14-5 23-18 23-34 0-20-15-36-35-36Z" fill="#075f88" opacity=".87"/>
+  <g fill="#16a6b5"><circle cx="209" cy="142" r="7"/><circle cx="235" cy="239" r="7"/><circle cx="427" cy="131" r="7"/><circle cx="411" cy="239" r="7"/></g>
+  <text x="44" y="322" fill="#14465d" font-family="Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="2">HUMAN METABOLOME ATLAS</text>
+</svg>

@@ -1,0 +1,36 @@
+:root {
+  --humeta-blue-900: #075e9e;
+  --humeta-blue-700: #087fbe;
+  --humeta-blue-500: #1597c4;
+  --humeta-blue-100: #eaf5fa;
+  --humeta-brand-primary: var(--humeta-blue-700);
+  --humeta-brand-hover: var(--humeta-blue-900);
+  --humeta-action: var(--humeta-brand-primary);
+  --humeta-action-hover: var(--humeta-brand-hover);
+  --humeta-action-pressed: color-mix(in srgb, var(--humeta-action-hover) 92%, black);
+  --humeta-motion-fast: 90ms;
+  --humeta-motion-base: 170ms;
+  --humeta-motion-slow: 220ms;
+  --humeta-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --humeta-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --humeta-hero-gradient: linear-gradient(
+    90deg,
+    var(--humeta-blue-500) 0%,
+    var(--humeta-blue-700) 55%,
+    var(--humeta-blue-900) 100%
+  );
+  --humeta-focus-ring: rgba(8, 127, 190, 0.22);
+  --primary-blue: var(--humeta-brand-primary);
+  --deep-blue: var(--humeta-blue-900);
+  --hero-blue: var(--humeta-blue-500);
+  --light-blue: var(--humeta-blue-100);
+  --text-dark: #173a4d;
+  --text-muted: #587384;
+  --border-color: #d8e5eb;
+  --color-white: #ffffff;
+  --content-width: 1280px;
+  --header-height: 88px;
+  --card-radius: 12px;
+  --hero-control-height: 64px;
+  --hero-control-radius: 7px;
+}

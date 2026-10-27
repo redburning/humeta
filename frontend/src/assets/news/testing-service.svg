@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs><linearGradient id="bg" x2="1"><stop stop-color="#dff3f3"/><stop offset="1" stop-color="#acd7df"/></linearGradient></defs><rect width="640" height="360" fill="url(#bg)"/>
+  <g fill="#fff" stroke="#147c98" stroke-width="4"><path d="M91 65h82v34l-10 17v129c0 27-14 45-31 45s-31-18-31-45V116L91 99Z"/><path d="M222 65h82v34l-10 17v129c0 27-14 45-31 45s-31-18-31-45V116l-10-17Z"/></g>
+  <path d="M102 210h60v41c0 23-12 37-30 37s-30-14-30-37Z" fill="#3ab4bc"/><path d="M233 178h60v73c0 23-12 37-30 37s-30-14-30-37Z" fill="#0b7393"/>
+  <g fill="none" stroke="#237c94" stroke-width="4"><circle cx="438" cy="177" r="85"/><path d="m399 177 25 25 54-61"/></g><text x="361" y="300" fill="#164a60" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2">TESTING SERVICE</text>
+</svg>

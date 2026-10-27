@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs><linearGradient id="bg" y2="1"><stop stop-color="#063e6a"/><stop offset="1" stop-color="#0b6e8c"/></linearGradient></defs><rect width="640" height="360" fill="url(#bg)"/>
+  <g stroke="#61e1dc" stroke-width="5"><path d="M58 287V231M86 287V253M117 287V187M149 287V267M182 287V111M217 287V223M249 287V157M284 287V244M322 287V76M360 287V208M398 287V133M435 287V257M473 287V175M512 287V229M551 287V98M584 287V246"/></g>
+  <path d="M48 287h548" stroke="#c8f5f0" stroke-width="2"/><g fill="#fff"><circle cx="182" cy="111" r="6"/><circle cx="322" cy="76" r="6"/><circle cx="551" cy="98" r="6"/></g>
+  <text x="48" y="328" fill="#fff" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="3">SPECTRUM SEARCH</text>
+</svg>

@@ -1,0 +1,409 @@
+html {
+  background: var(--deep-blue);
+  font-family: Arial, "Microsoft YaHei", "微软雅黑", sans-serif;
+  scroll-behavior: smooth;
+}
+
+body,
+#app {
+  overflow-x: clip;
+  color: var(--text-dark);
+  background: white;
+  font-family: Arial, "Microsoft YaHei", "微软雅黑", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select,
+option {
+  font-family: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--humeta-focus-ring);
+  outline-offset: 3px;
+}
+
+#app button:focus-visible,
+#app a:focus-visible,
+#app input:focus-visible,
+#app select:focus-visible {
+  outline-color: var(--humeta-focus-ring);
+}
+
+/* Humeta Interaction System: project-owned controls only. */
+#app :where(
+  .search-button,
+  .browser-search-button,
+  .search-actions__primary,
+  .action-button:not(.action-button--secondary),
+  .export-actions button:first-child
+) {
+  transition:
+    color var(--humeta-motion-base) var(--humeta-ease-standard),
+    background-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    transform var(--humeta-motion-fast) var(--humeta-ease-out);
+}
+
+#app :where(
+  .search-button,
+  .browser-search-button,
+  .search-actions__primary,
+  .action-button:not(.action-button--secondary),
+  .export-actions button:first-child
+):hover:not(:disabled) {
+  border-color: var(--humeta-action-hover);
+  color: #fff;
+  background: var(--humeta-action-hover);
+}
+
+#app :where(
+  .search-button,
+  .browser-search-button,
+  .search-actions__primary,
+  .action-button:not(.action-button--secondary),
+  .export-actions button:first-child
+):active:not(:disabled) {
+  border-color: var(--humeta-action-pressed);
+  color: #fff;
+  background: var(--humeta-action-pressed);
+  transform: translateY(1px);
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app :where(
+  .result-card__details,
+  .structure-result-card__details,
+  .chemical-description__image-wrap a,
+  .search-actions > button:not(.search-actions__primary),
+  .action-button--secondary,
+  .export-actions button:not(:first-child)
+) {
+  transition:
+    color var(--humeta-motion-base) var(--humeta-ease-standard),
+    background-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    transform var(--humeta-motion-fast) var(--humeta-ease-out);
+}
+
+#app :where(
+  .result-card__details,
+  .structure-result-card__details,
+  .chemical-description__image-wrap a,
+  .search-actions > button:not(.search-actions__primary),
+  .action-button--secondary,
+  .export-actions button:not(:first-child)
+):hover:not(:disabled) {
+  border-color: var(--humeta-action);
+  color: var(--humeta-action-hover);
+  background: var(--humeta-blue-100);
+}
+
+#app :where(
+  .result-card__details,
+  .structure-result-card__details,
+  .chemical-description__image-wrap a,
+  .search-actions > button:not(.search-actions__primary),
+  .action-button--secondary,
+  .export-actions button:not(:first-child)
+):active:not(:disabled) {
+  border-color: var(--humeta-action-hover);
+  color: var(--humeta-action-pressed);
+  background: color-mix(in srgb, var(--humeta-blue-100) 88%, var(--humeta-action) 12%);
+  transform: translateY(1px);
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app :where(
+  .feature-card__arrow,
+  .detail-section__action,
+  .contents-card__collapse,
+  .data-block__heading button,
+  .taxonomy-tree__toggle
+) {
+  transition:
+    color var(--humeta-motion-base) var(--humeta-ease-standard),
+    background-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard);
+}
+
+#app :where(
+  .feature-card__arrow,
+  .detail-section__action,
+  .contents-card__collapse,
+  .data-block__heading button,
+  .taxonomy-tree__toggle
+):hover:not(:disabled) {
+  border-color: var(--humeta-action);
+  color: var(--humeta-action-hover);
+  background: var(--humeta-blue-100);
+}
+
+#app :where(
+  .feature-card__arrow,
+  .detail-section__action,
+  .contents-card__collapse,
+  .data-block__heading button,
+  .taxonomy-tree__toggle
+):active:not(:disabled) {
+  border-color: var(--humeta-action-hover);
+  color: var(--humeta-action-pressed);
+  background: color-mix(in srgb, var(--humeta-blue-100) 84%, var(--humeta-action) 16%);
+  transform: none;
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app .reference-tags button {
+  transition:
+    color var(--humeta-motion-base) var(--humeta-ease-standard),
+    background-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard);
+}
+
+#app .reference-tags button:hover,
+#app .reference-tags button:focus-visible,
+#app .reference-tags button:active {
+  transform: none;
+}
+
+#app .reference-tags button:active {
+  border-color: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.16);
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app :where(
+  .mode-tab,
+  .result-tabs button,
+  .tissue-distribution__modes button,
+  .contents-card__nav a
+) {
+  transition:
+    color var(--humeta-motion-base) var(--humeta-ease-standard),
+    background-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard);
+}
+
+#app :where(
+  .mode-tab:not(.mode-tab--active),
+  .result-tabs button:not(.result-tabs__button--active),
+  .tissue-distribution__modes button:not(.is-active),
+  .contents-card__nav a:not(.is-active)
+):hover {
+  color: var(--humeta-action-hover);
+  background: color-mix(in srgb, var(--humeta-blue-100) 66%, white);
+}
+
+#app .mode-tab:not(.mode-tab--active):hover strong {
+  color: var(--humeta-action-hover);
+}
+
+#app :where(
+  .mode-tab:not(.mode-tab--active),
+  .result-tabs button:not(.result-tabs__button--active),
+  .tissue-distribution__modes button:not(.is-active),
+  .contents-card__nav a:not(.is-active)
+):active {
+  color: var(--humeta-action-pressed);
+  background: color-mix(in srgb, var(--humeta-blue-100) 84%, var(--humeta-action) 16%);
+  transform: none;
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app .mode-tab--active:active {
+  background: color-mix(in srgb, var(--humeta-blue-100) 84%, var(--humeta-action) 16%);
+  transform: none;
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app :where(
+  .result-tabs__button--active,
+  .tissue-distribution__modes button.is-active
+):active {
+  border-color: var(--humeta-action-pressed);
+  background: var(--humeta-action-pressed);
+  transform: none;
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app :where(.result-pagination button, .pagination button, .news-pagination button) {
+  transition:
+    color var(--humeta-motion-base) var(--humeta-ease-standard),
+    background-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    transform var(--humeta-motion-fast) var(--humeta-ease-out);
+}
+
+#app :where(
+  .result-pagination button:not([aria-current='page']),
+  .pagination button:not([aria-current='page']),
+  .news-pagination button:not([aria-current='page'])
+):hover:not(:disabled) {
+  border-color: var(--humeta-action);
+  color: var(--humeta-action-hover);
+  background: var(--humeta-blue-100);
+}
+
+#app :where(
+  .result-pagination button:not([aria-current='page']),
+  .pagination button:not([aria-current='page']),
+  .news-pagination button:not([aria-current='page'])
+):active:not(:disabled) {
+  border-color: var(--humeta-action-hover);
+  color: var(--humeta-action-pressed);
+  background: color-mix(in srgb, var(--humeta-blue-100) 84%, var(--humeta-action) 16%);
+  transform: translateY(1px);
+  transition-duration: var(--humeta-motion-fast);
+}
+
+#app :where(
+  .result-pagination button[aria-current='page'],
+  .pagination button[aria-current='page'],
+  .news-pagination button[aria-current='page']
+):active {
+  transform: none;
+}
+
+#app :where(
+  .browser-search-form input,
+  .browser-search-form select,
+  .select-control select,
+  .result-pagination__jump input,
+  .panel-card textarea
+) {
+  transition:
+    border-color var(--humeta-motion-base) var(--humeta-ease-standard),
+    box-shadow var(--humeta-motion-base) var(--humeta-ease-standard);
+}
+
+#app :where(
+  .browser-search-form input,
+  .browser-search-form select,
+  .select-control select,
+  .result-pagination__jump input,
+  .panel-card textarea
+):hover:not(:disabled):not(:focus) {
+  border-color: color-mix(in srgb, var(--humeta-action) 56%, var(--border-color));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--humeta-action) 24%, transparent);
+}
+
+#app .browser-search-form input:focus,
+#app .browser-search-form select:focus,
+#app .panel-card textarea:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+#app :where(
+  .browser-search-form input,
+  .browser-search-form select
+):focus-visible {
+  outline: 0;
+  box-shadow: inset 0 0 0 2px var(--humeta-focus-ring);
+}
+
+#app :where(
+  .select-control select,
+  .result-pagination__jump input,
+  .panel-card textarea,
+  .check-control input
+):focus-visible,
+#app :where(
+  .search-button,
+  .browser-search-button,
+  .search-actions button,
+  .action-button,
+  .export-actions button,
+  .result-card__details,
+  .structure-result-card__details,
+  .chemical-description__image-wrap a,
+  .feature-card__arrow,
+  .detail-section__action,
+  .contents-card__collapse,
+  .data-block__heading button,
+  .taxonomy-tree__toggle,
+  .mode-tab,
+  .result-tabs button,
+  .tissue-distribution__modes button,
+  .contents-card__nav a,
+  .result-pagination button,
+  .pagination button,
+  .news-pagination button,
+  .reference-tags button
+):focus-visible {
+  outline: 2px solid var(--humeta-focus-ring);
+  outline-offset: 2px;
+}
+
+#app .check-control input {
+  transition:
+    accent-color var(--humeta-motion-fast) var(--humeta-ease-standard),
+    outline-color var(--humeta-motion-fast) var(--humeta-ease-standard);
+}
+
+#app .check-control:hover input:not(:disabled) {
+  outline: 1px solid color-mix(in srgb, var(--humeta-action) 58%, transparent);
+  outline-offset: 1px;
+}
+
+#app .check-control input:active:not(:disabled) {
+  accent-color: var(--humeta-action-pressed);
+  transform: none;
+}
+
+#app :where(
+  .search-button,
+  .browser-search-button,
+  .search-actions button,
+  .action-button,
+  .export-actions button,
+  .structure-result-card__details,
+  .data-block__heading button,
+  .result-pagination button,
+  .pagination button,
+  .news-pagination button
+):disabled {
+  cursor: not-allowed;
+  transform: none;
+  transition-duration: 0ms;
+}
+
+.page-container {
+  width: min(var(--content-width), calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 767px) {
+  .page-container {
+    width: min(100% - 40px, var(--content-width));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#084972"/><stop offset="1" stop-color="#15a4b1"/></linearGradient></defs><rect width="640" height="360" fill="url(#bg)"/>
+  <rect x="124" y="45" width="310" height="270" rx="4" fill="#fff"/><path d="M389 45v54h45" fill="#caeceb"/><g fill="#8db7c1"><rect x="164" y="103" width="173" height="8"/><rect x="164" y="133" width="226" height="8"/><rect x="164" y="163" width="196" height="8"/><rect x="164" y="222" width="148" height="8"/></g>
+  <rect x="340" y="205" width="184" height="68" fill="#dff4f3" stroke="#81c4c9" stroke-width="2"/><text x="359" y="235" fill="#12677f" font-family="Arial,sans-serif" font-size="16" font-weight="700">SOURCE · RELEASE</text><text x="359" y="257" fill="#317c8d" font-family="Arial,sans-serif" font-size="13">ACCESS DATE</text>
+  <g fill="none" stroke="#9be2df" stroke-width="4"><circle cx="487" cy="95" r="34"/><path d="m511 119 42 42"/></g>
+</svg>

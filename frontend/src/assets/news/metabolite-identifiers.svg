@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#e8f4f4"/><g fill="none" stroke="#1593a8" stroke-width="3"><path d="M173 91 320 180 478 92M173 270l147-90 158 90"/></g>
+  <g font-family="Arial,sans-serif" font-size="18" font-weight="700"><rect x="61" y="56" width="170" height="70" rx="3" fill="#fff" stroke="#7bbbc4"/><text x="94" y="98" fill="#17627d">DATABASE ID</text><rect x="409" y="56" width="170" height="70" rx="3" fill="#fff" stroke="#7bbbc4"/><text x="454" y="98" fill="#17627d">InChIKey</text><rect x="61" y="235" width="170" height="70" rx="3" fill="#fff" stroke="#7bbbc4"/><text x="112" y="278" fill="#17627d">FORMULA</text><rect x="409" y="235" width="170" height="70" rx="3" fill="#fff" stroke="#7bbbc4"/><text x="460" y="278" fill="#17627d">SMILES</text></g>
+  <circle cx="320" cy="180" r="67" fill="#075f88"/><g fill="none" stroke="#92e2df" stroke-width="4"><path d="m286 180 17-30h35l17 30-17 30h-35Z"/><path d="M355 180h26"/></g><circle cx="383" cy="180" r="7" fill="#92e2df"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs><linearGradient id="bg" x2="1"><stop stop-color="#d9f0ef"/><stop offset="1" stop-color="#c3e0e8"/></linearGradient></defs><rect width="640" height="360" fill="url(#bg)"/>
+  <g fill="#fff" stroke="#2b95a6" stroke-width="3"><rect x="48" y="90" width="134" height="89"/><rect x="253" y="90" width="134" height="89"/><rect x="458" y="90" width="134" height="89"/><rect x="253" y="239" width="134" height="72"/></g>
+  <g fill="none" stroke="#137e98" stroke-width="4"><path d="M182 134h71M387 134h71M320 179v60"/><path d="m239 123 14 11-14 11M444 123l14 11-14 11M309 225l11 14 11-14"/></g>
+  <g fill="#176b86" font-family="Arial,sans-serif" font-size="17" font-weight="700" text-anchor="middle"><text x="115" y="143">BROWSE</text><text x="320" y="143">SPECTRUM</text><text x="525" y="143">STRUCTURE</text><text x="320" y="281">RESULTS</text></g>
+  <g fill="#24a8b3"><circle cx="115" cy="107" r="7"/><circle cx="320" cy="107" r="7"/><circle cx="525" cy="107" r="7"/></g>
+</svg>

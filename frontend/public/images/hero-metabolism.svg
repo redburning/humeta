@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 620" role="img" aria-labelledby="hero-art-title">
+  <title id="hero-art-title">人体轮廓、比例环与代谢通路科技图形</title>
+  <defs>
+    <linearGradient id="body-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#e9fbff" stop-opacity=".12"/>
+      <stop offset=".5" stop-color="#bcefff" stop-opacity=".055"/>
+      <stop offset="1" stop-color="#7edcf5" stop-opacity=".018"/>
+    </linearGradient>
+    <linearGradient id="body-line" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d8f8ff" stop-opacity=".2"/>
+      <stop offset=".48" stop-color="#f0fdff" stop-opacity=".58"/>
+      <stop offset="1" stop-color="#90e5fb" stop-opacity=".13"/>
+    </linearGradient>
+    <linearGradient id="route-line" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#d4f9ff" stop-opacity=".72"/>
+      <stop offset=".55" stop-color="#aeeede" stop-opacity=".66"/>
+      <stop offset="1" stop-color="#efd98b" stop-opacity=".72"/>
+    </linearGradient>
+    <radialGradient id="node-glow">
+      <stop stop-color="#fff" stop-opacity=".98"/>
+      <stop offset=".22" stop-color="#cdf8ff" stop-opacity=".82"/>
+      <stop offset="1" stop-color="#79dbfa" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="micro-dots" width="38" height="38" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1" fill="#d5f8ff" opacity=".28"/>
+    </pattern>
+    <filter id="soft-glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <g id="background-network">
+    <rect width="1600" height="620" fill="url(#micro-dots)" opacity=".38"/>
+    <g fill="none" stroke="#d4f7ff" stroke-width="1.15" opacity=".28">
+      <circle cx="135" cy="365" r="165"/>
+      <circle cx="135" cy="365" r="109" stroke-dasharray="3 9"/>
+      <path d="M0 365h303M135 200v330M0 297h83l31 31h78l31-37h89M0 438h94l27-34h67l32 31h88"/>
+      <path d="M16 245c72 32 102 72 133 126 33 57 78 82 148 90M15 503c77-57 118-51 176-15 39 24 79 19 115-7" stroke-dasharray="5 9"/>
+      <path d="M1248 64h294v211h-294zM1279 95h233v149h-233zM1248 137h294M1248 205h294M1323 64v211M1395 64v211M1467 64v211" opacity=".75"/>
+      <path d="m1232 334 62-34 50 21 40-45 72 28 48-42 80 34M1245 396l72 42 72-55 62 39 111-76"/>
+      <path d="M326 146c88 8 134 40 180 94 37 43 82 60 142 46M342 516c77-43 133-53 198-23 50 23 91 18 139-10M1265 132c-94 9-137 51-186 102-41 43-82 61-140 56M1277 500c-76-43-130-49-192-16-48 26-92 24-135 5"/>
+      <path d="M298 364h246l46-37h93M1056 365h225l51-37h237" stroke-dasharray="6 9"/>
+    </g>
+    <g fill="#daf9ff" opacity=".46">
+      <circle cx="83" cy="297" r="4"/><circle cx="114" cy="328" r="3"/><circle cx="223" cy="291" r="3"/><circle cx="94" cy="438" r="4"/><circle cx="220" cy="435" r="3"/>
+      <circle cx="346" cy="146" r="3"/><circle cx="506" cy="240" r="4"/><circle cx="590" cy="327" r="3"/><circle cx="364" cy="504" r="3"/><circle cx="540" cy="493" r="4"/>
+      <circle cx="1294" cy="300" r="3"/><circle cx="1344" cy="321" r="4"/><circle cx="1384" cy="276" r="3"/><circle cx="1456" cy="304" r="4"/><circle cx="1504" cy="262" r="3"/>
+      <circle cx="1265" cy="132" r="3"/><circle cx="1079" cy="234" r="4"/><circle cx="1056" cy="365" r="3"/><circle cx="1281" cy="365" r="4"/><circle cx="1085" cy="484" r="3"/>
+    </g>
+  </g>
+
+  <g id="proportion-rings" fill="none" transform="translate(800 335)">
+    <ellipse rx="192" ry="274" stroke="#d8f8ff" stroke-opacity=".17" stroke-width="1.2"/>
+    <ellipse rx="256" ry="246" stroke="#d8f8ff" stroke-opacity=".14" stroke-width="1" stroke-dasharray="4 9"/>
+    <ellipse rx="326" ry="214" stroke="#d8f8ff" stroke-opacity=".12" stroke-width="1.1"/>
+    <path d="M-344 0h688M0-294v588" stroke="#dcf9ff" stroke-opacity=".13"/>
+    <path d="M-282-151h38m-67 76h42m-61 75h46m-27 76h42m-13 75h38M282-151h-38m67 76h-42m61 75h-46m27 76h-42m13 75h-38" stroke="#d9f8ff" stroke-opacity=".2"/>
+  </g>
+
+  <g id="human-body">
+    <path d="M780 132c-2 16-8 25-22 32-29 8-58 17-82 32-28 18-52 44-76 72l-53 63c-12 15-11 31 3 42 14 10 28 5 40-8l92-91 37-18c-8 48-16 94-15 141 1 34 7 58 16 82l-48 119c-7 18 1 35 18 41 17 6 31-3 39-20l61-129 10 1 61 128c8 17 22 26 39 20 17-6 25-23 18-41l-48-119c9-24 15-48 16-82 1-47-7-93-15-141l37 18 92 91c12 13 26 18 40 8 14-11 15-27 3-42l-53-63c-24-28-48-54-76-72-24-15-53-24-82-32-14-7-20-16-22-32Z" fill="url(#body-fill)" stroke="url(#body-line)" stroke-width="2"/>
+    <ellipse cx="800" cy="86" rx="40" ry="48" fill="url(#body-fill)" stroke="url(#body-line)" stroke-width="2"/>
+    <path d="M784 61c11-8 23-9 34-2M779 88c7 7 35 7 42 0M788 111c8 5 16 5 24 0" fill="none" stroke="#e7fbff" stroke-opacity=".2"/>
+    <path d="M781 130c7 10 31 10 38 0M758 164c8 18 23 28 42 29 19-1 34-11 42-29M719 256c20 18 51 28 81 28 30 0 61-10 81-28M706 392c28 16 58 23 94 23s66-7 94-23M720 479c24 11 51 16 80 16s56-5 80-16" fill="none" stroke="#e0f9ff" stroke-opacity=".23" stroke-width="1.2"/>
+    <path d="M748 194c12 29 25 43 52 48 27-5 40-19 52-48M731 303c23 13 46 19 69 19s46-6 69-19M728 351c25 13 49 19 72 19s47-6 72-19" fill="none" stroke="#c9f5ff" stroke-opacity=".24"/>
+  </g>
+
+  <g id="metabolism-routes" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M800 134v421" stroke="url(#route-line)" stroke-width="2.2"/>
+    <path d="m800 184-61 34-52 53-88 72M800 184l61 34 52 53 88 72M800 254l-45 52-22 75-48 92M800 254l45 52 22 75 48 92M800 354l-30 90-38 116M800 354l30 90 38 116" stroke="url(#route-line)" stroke-width="2"/>
+    <path d="M800 226c-28 24-41 53-27 78 14 25 52 10 44-16-8-25-36-31-53-10-17 21-7 55 22 62 29 7 55-15 53-44" stroke="#baf4eb" stroke-opacity=".65" stroke-width="1.6"/>
+    <path d="M761 335c14 11 27 17 39 17s25-6 39-17M770 444c11 7 20 11 30 11s19-4 30-11" stroke="#f0dfa2" stroke-opacity=".48"/>
+  </g>
+
+  <g id="metabolism-nodes" fill="url(#node-glow)">
+    <circle cx="800" cy="134" r="11"/><circle cx="800" cy="184" r="10"/><circle cx="739" cy="218" r="9"/><circle cx="861" cy="218" r="9"/>
+    <circle cx="687" cy="271" r="8"/><circle cx="913" cy="271" r="8"/><circle cx="800" cy="254" r="12"/><circle cx="755" cy="306" r="9"/><circle cx="845" cy="306" r="9"/>
+    <circle cx="733" cy="381" r="8"/><circle cx="867" cy="381" r="8"/><circle cx="800" cy="354" r="11"/><circle cx="770" cy="444" r="9"/><circle cx="830" cy="444" r="9"/>
+    <circle cx="732" cy="560" r="8"/><circle cx="868" cy="560" r="8"/>
+  </g>
+
+  <g id="foreground-lights" fill="#e8fcff">
+    <circle cx="800" cy="254" r="18" opacity=".18" filter="url(#soft-glow)"/>
+    <circle cx="739" cy="218" r="12" opacity=".12" filter="url(#soft-glow)"/>
+    <circle cx="861" cy="218" r="12" opacity=".12" filter="url(#soft-glow)"/>
+    <circle cx="687" cy="271" r="3" opacity=".62"/><circle cx="913" cy="271" r="3" opacity=".62"/>
+    <circle cx="599" cy="343" r="3" opacity=".5"/><circle cx="1001" cy="343" r="3" opacity=".5"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#063f68"/><path d="M50 180h540" stroke="#c5eeec" stroke-width="2"/>
+  <g stroke="#55d3d0" stroke-width="5"><path d="M68 180v-36M96 180v-75M126 180v-28M159 180V62M193 180v-59M229 180v-94M265 180v-43M304 180V76M345 180v-65M386 180v-31M428 180v-88M471 180v-49M514 180v-111M558 180v-57"/></g>
+  <g stroke="#30a4bc" stroke-width="5" opacity=".75"><path d="M68 180v29M96 180v61M126 180v22M159 180v104M193 180v47M229 180v75M265 180v34M304 180v82M345 180v52M386 180v25M428 180v71M471 180v39M514 180v92M558 180v45"/></g>
+  <text x="46" y="326" fill="#fff" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="3">SPECTRAL EVIDENCE</text>
+</svg>

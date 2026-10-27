@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 46" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">Humeta</title>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 7c16 4 16 28 32 32M43 7C27 11 27 35 11 39" stroke-width="2" opacity=".92"/>
+    <path d="M14 13h25M11 23h32M14 33h25" stroke-width="1.5" opacity=".75"/>
+  </g>
+  <g fill="#d8f8ff" stroke="#fff" stroke-width="1">
+    <circle cx="11" cy="7" r="3"/><circle cx="43" cy="7" r="3"/>
+    <circle cx="15" cy="13" r="2.4"/><circle cx="39" cy="13" r="2.4"/>
+    <circle cx="11" cy="23" r="2.8"/><circle cx="43" cy="23" r="2.8"/>
+    <circle cx="15" cy="33" r="2.4"/><circle cx="39" cy="33" r="2.4"/>
+    <circle cx="11" cy="39" r="3"/><circle cx="43" cy="39" r="3"/>
+  </g>
+  <text x="56" y="34" fill="#fff" font-family="Arial, 'Segoe UI', sans-serif" font-size="31" font-weight="700" letter-spacing="1">Humeta</text>
+</svg>

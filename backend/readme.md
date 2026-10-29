@@ -75,11 +75,12 @@ mvn spring-boot:run          # http://localhost:8094
 返回结构对齐前端 `metaboliteDetails` 单条记录：
 
 - `id`、`heroLabel`、`name`、`chineseName`
+- `overview`：来自 `metabolite_desc` 表，`{ label, value, description: [中文介绍, 英文介绍] }`；无介绍记录时为 `null`
 - `identifiers`：Humeta 编号、CAS、PubChem、HMDB、KEGG、LIPID MAPS、SwissLipids、ChEBI、缩写、同义词等
 - `chemicalDescription`：分子式、质量、IUPAC、InChIKey、SMILES、描述符、结构图
 - `taxonomy`：Humeta Classification System + Classyfire System 两棵树
 
-仅返回 `metabolite` 表可提供的数据；`overview`、`spectra`、`tissueDistribution`、
+返回 `metabolite` 与 `metabolite_desc` 能提供的数据；`spectra`、`tissueDistribution`、
 `biofluidConcentrations`、`trajectories`、`diseaseAssociation`、`pathway` 等表内没有的区块不返回。
 未找到返回 HTTP 404。
 
@@ -92,11 +93,28 @@ mvn spring-boot:run          # http://localhost:8094
 | `repository/MetaboliteRepository` | Spring Data JPA 仓库（`JpaRepository` + `JpaSpecificationExecutor`） |
 | `repository/MetaboliteSpecifications` | 多条件检索与联想的 Criteria 条件 |
 | `entity/MetaboliteEntity` | JPA 实体，映射 `metabolite` 表 |
+| `entity/MetaboliteDescEntity` | JPA 实体，映射 `metabolite_desc` 表 |
+| `repository/MetaboliteDescRepository` | 中英文介绍仓库 |
 | `dto/MetaboliteDto` | 与前端 `MetaboliteSearchRecord` 对齐 |
 | `dto/SuggestionDto` | 与前端 `SuggestionItem` 对齐 |
 | `config/SpringMvcConfig` | 静态资源与 `/api/**` CORS |
 
-## 数据导入（可选 / 历史脚本）
+## 数据导入
+
+### 代谢物中英文介绍（md Overview -> MySQL）
+
+`scripts/import_overview_md.py` 读取 `md Overview/*.md`（文件名即 Humeta 编号，
+第一行为中文介绍、第二行为英文介绍），按 id upsert 到 MySQL 表
+`metabolite_desc(id, desc_cn, desc_en)`。
+
+```bash
+pip install pymysql
+# 先填写脚本顶部的 DB_HOST / DB_USER / DB_PASSWORD，或设置 HUMETA_DB_* 环境变量
+python scripts/import_overview_md.py --dry-run   # 只解析预览
+python scripts/import_overview_md.py             # 写入数据库
+```
+
+### 历史脚本（SQLite）
 
 `metabolite` 表的数据已迁移到 MySQL，应用运行不依赖该脚本。
 `scripts/import_humeta_csv.py` 仅用于从 CSV 重建本地 SQLite 源库（单表 `metabolite`，列名与 CSV 表头一致）。

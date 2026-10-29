@@ -26,10 +26,10 @@ from pymysql.cursors import DictCursor
 # ============================================================
 
 # ---- 数据库连接信息（TODO: 补充）----
-DB_HOST     = "81.70.215.151"          # 例如 "127.0.0.1"
+DB_HOST     = "127.0.0.1"          # 例如 "127.0.0.1"
 DB_PORT     = 3306
 DB_USER     = "root"          # 例如 "root"
-DB_PASSWORD = "Abc123+-*/"          # 例如 "xxxx"
+DB_PASSWORD = "aaa123+-*/"          # 例如 "xxxx"
 DB_NAME     = "humeta"          # 例如 "your_database"
 DB_CHARSET  = "utf8mb4"
 

@@ -23,13 +23,16 @@ import redburning.github.io.humeta.dto.MetaboliteCountDto;
 import redburning.github.io.humeta.dto.MetaboliteDetailDto;
 import redburning.github.io.humeta.dto.MetaboliteDto;
 import redburning.github.io.humeta.dto.MetabolitePageDto;
+import redburning.github.io.humeta.dto.MetaboliteOverviewDto;
 import redburning.github.io.humeta.dto.MetaboliteQuery;
 import redburning.github.io.humeta.dto.MetaboliteSearchRequest;
 import redburning.github.io.humeta.dto.PropertyFieldDto;
 import redburning.github.io.humeta.dto.SuggestionDto;
 import redburning.github.io.humeta.dto.TaxonomyDto;
 import redburning.github.io.humeta.dto.TaxonomyNodeDto;
+import redburning.github.io.humeta.entity.MetaboliteDescEntity;
 import redburning.github.io.humeta.entity.MetaboliteEntity;
+import redburning.github.io.humeta.repository.MetaboliteDescRepository;
 import redburning.github.io.humeta.repository.MetaboliteRepository;
 import redburning.github.io.humeta.repository.MetaboliteSpecifications;
 
@@ -51,9 +54,12 @@ public class MetaboliteService {
     private static final Sort SORT_BY_ID = Sort.by(Sort.Direction.ASC, "id");
 
     private final MetaboliteRepository metaboliteRepository;
+    private final MetaboliteDescRepository metaboliteDescRepository;
 
-    public MetaboliteService(MetaboliteRepository metaboliteRepository) {
+    public MetaboliteService(MetaboliteRepository metaboliteRepository,
+            MetaboliteDescRepository metaboliteDescRepository) {
         this.metaboliteRepository = metaboliteRepository;
+        this.metaboliteDescRepository = metaboliteDescRepository;
     }
 
     /**
@@ -184,7 +190,9 @@ public class MetaboliteService {
             return null;
         }
         return metaboliteRepository.findByIdIgnoreCase(id.trim())
-                .map(this::toDetailDto)
+                .map(entity -> toDetailDto(
+                        entity,
+                        metaboliteDescRepository.findById(entity.getId()).orElse(null)))
                 .orElse(null);
     }
 
@@ -222,15 +230,31 @@ public class MetaboliteService {
         return dto;
     }
 
-    private MetaboliteDetailDto toDetailDto(MetaboliteEntity entity) {
+    private MetaboliteDetailDto toDetailDto(MetaboliteEntity entity, MetaboliteDescEntity desc) {
         MetaboliteDetailDto dto = new MetaboliteDetailDto();
         dto.setId(entity.getId());
         dto.setName(displayName(entity.getName()));
         dto.setChineseName(displayName(entity.getChineseName()));
         dto.setIdentifiers(buildIdentifiers(entity));
+        dto.setOverview(buildOverview(desc));
         dto.setChemicalDescription(buildChemicalDescription(entity, dto.getName()));
         dto.setTaxonomy(buildTaxonomy(entity));
         return dto;
+    }
+
+    private MetaboliteOverviewDto buildOverview(MetaboliteDescEntity desc) {
+        if (desc == null) {
+            return null;
+        }
+
+        List<String> description = new ArrayList<>();
+        addIfPresent(description, desc.getDescCn());
+        addIfPresent(description, desc.getDescEn());
+        if (description.isEmpty()) {
+            return null;
+        }
+
+        return new MetaboliteOverviewDto("Biochemical Origin:", "", description);
     }
 
     private List<PropertyFieldDto> buildIdentifiers(MetaboliteEntity entity) {

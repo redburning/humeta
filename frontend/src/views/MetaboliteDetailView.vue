@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import HumetaLoading from '../components/common/HumetaLoading.vue'
 import ChemicalDescription from '../components/metabolite/ChemicalDescription.vue'
@@ -21,15 +21,30 @@ const loadError = ref('')
 const contentsCollapsed = ref(false)
 let activeRequest = 0
 
-const contentsItems = [
-  { id: 'metabolite-id', label: 'Metabolite ID', icon: 'record', group: 'Identity' },
-  { id: 'chemical-description', label: 'Chemical Description', icon: 'chemical', group: 'Chemistry' },
-  { id: 'chemical-taxonomy', label: 'Chemical Taxonomy', icon: 'taxonomy' },
+const SECTION_IDS = [
+  'metabolite-id',
+  'general-overview',
+  'chemical-description',
+  'chemical-taxonomy',
 ]
 
-const { activeId, scrollToSection, refresh: refreshScrollSpy } = useDetailScrollSpy(
-  contentsItems.map((item) => item.id),
-)
+const contentsItems = computed(() => {
+  const items = [
+    { id: 'metabolite-id', label: 'Metabolite ID', icon: 'record', group: 'Identity' },
+  ]
+
+  if (metabolite.value?.overview?.description?.length) {
+    items.push({ id: 'general-overview', label: 'General Overview', icon: 'overview' })
+  }
+
+  items.push(
+    { id: 'chemical-description', label: 'Chemical Description', icon: 'chemical', group: 'Chemistry' },
+    { id: 'chemical-taxonomy', label: 'Chemical Taxonomy', icon: 'taxonomy' },
+  )
+  return items
+})
+
+const { activeId, scrollToSection, refresh: refreshScrollSpy } = useDetailScrollSpy(SECTION_IDS)
 
 watch(
   () => route.params.id,
@@ -65,6 +80,74 @@ watch(
   },
   { immediate: true },
 )
+
+const overviewDescriptionRef = ref(null)
+const overviewExpanded = ref(false)
+const overviewOverflows = ref(false)
+let overviewResizeObserver
+let overviewMounted = false
+
+function measureOverviewOverflow() {
+  const description = overviewDescriptionRef.value
+  if (!description) {
+    overviewOverflows.value = false
+    return
+  }
+
+  const lineHeight = Number.parseFloat(window.getComputedStyle(description).lineHeight)
+  if (!Number.isFinite(lineHeight)) {
+    overviewOverflows.value = false
+    return
+  }
+
+  overviewOverflows.value = description.scrollHeight > (lineHeight * 5) + 1
+}
+
+function observeOverviewDescription() {
+  overviewResizeObserver?.disconnect()
+  if (overviewDescriptionRef.value) overviewResizeObserver?.observe(overviewDescriptionRef.value)
+  measureOverviewOverflow()
+}
+
+function toggleOverviewDescription() {
+  overviewExpanded.value = !overviewExpanded.value
+}
+
+watch(
+  [() => metabolite.value?.id, () => metabolite.value?.overview?.description],
+  async () => {
+    overviewExpanded.value = false
+    await nextTick()
+    observeOverviewDescription()
+  },
+  { flush: 'post' },
+)
+
+onMounted(async () => {
+  overviewMounted = true
+  if (typeof ResizeObserver !== 'undefined') {
+    overviewResizeObserver = new ResizeObserver(measureOverviewOverflow)
+  }
+  await nextTick()
+  observeOverviewDescription()
+  document.fonts?.ready.then(() => {
+    if (overviewMounted) measureOverviewOverflow()
+  })
+})
+
+onBeforeUnmount(() => {
+  overviewMounted = false
+  overviewResizeObserver?.disconnect()
+})
+
+watch(
+  contentsCollapsed,
+  async () => {
+    await nextTick()
+    measureOverviewOverflow()
+  },
+  { flush: 'post' },
+)
 </script>
 
 <template>
@@ -78,6 +161,32 @@ watch(
         <div class="detail-layout__content">
           <DetailSection id="metabolite-id" title="Metabolite ID" icon="record" :active="activeId === 'metabolite-id'">
             <PropertyTable :fields="metabolite.identifiers" />
+          </DetailSection>
+
+          <DetailSection v-if="metabolite.overview?.description?.length" id="general-overview" title="Overview" icon="overview" :active="activeId === 'general-overview'">
+            <div class="overview">
+              <p
+                id="metabolite-overview-description"
+                ref="overviewDescriptionRef"
+                class="overview__description"
+                :class="{ 'overview__description--collapsed': !overviewExpanded }"
+              ><template v-for="(paragraph, index) in metabolite.overview.description" :key="`${metabolite.id}-${index}`"><span>{{ paragraph }}</span><br v-if="index < metabolite.overview.description.length - 1"></template></p>
+              <button
+                v-if="overviewOverflows"
+                type="button"
+                class="overview__toggle"
+                :aria-label="overviewExpanded ? 'Show less' : 'Show more'"
+                :aria-expanded="overviewExpanded"
+                aria-controls="metabolite-overview-description"
+                :title="overviewExpanded ? 'Show less' : 'Show more'"
+                @click="toggleOverviewDescription"
+              >
+                <svg viewBox="0 0 14 14" aria-hidden="true">
+                  <path v-if="overviewExpanded" d="m3.5 8.5 3.5-3 3.5 3" />
+                  <path v-else d="m3.5 5.5 3.5 3 3.5-3" />
+                </svg>
+              </button>
+            </div>
           </DetailSection>
 
           <DetailSection id="chemical-description" title="Chemical Descriptors" icon="chemical" :active="activeId === 'chemical-description'">

@@ -24,12 +24,19 @@ export interface MetaboliteChemicalDescription {
   structureDownloadName: string
 }
 
+export interface MetaboliteOverview {
+  label: string
+  value: string
+  description: string[]
+}
+
 export interface MetaboliteDetail {
   id: string
   heroLabel: string
   name: string
   chineseName: string
   identifiers: MetabolitePropertyField[]
+  overview?: MetaboliteOverview | null
   chemicalDescription: MetaboliteChemicalDescription
   taxonomy: MetaboliteTaxonomy[]
 }

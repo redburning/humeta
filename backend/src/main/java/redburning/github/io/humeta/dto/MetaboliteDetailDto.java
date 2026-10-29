@@ -8,8 +8,8 @@ import lombok.Data;
 /**
  * 代谢物详情，结构对齐前端 {@code metaboliteDetails} 中的单条记录。
  *
- * <p>只包含 {@code metabolite} 表能提供的数据；表结构中没有的区块
- * （overview、spectra、tissue distribution、disease association 等）不返回。</p>
+ * <p>检索字段来自 {@code metabolite} 表；Overview 来自 {@code metabolite_desc} 表。
+ * 表结构中没有的区块（spectra、tissue distribution、disease association 等）不返回。</p>
  */
 @Data
 public class MetaboliteDetailDto {
@@ -23,6 +23,8 @@ public class MetaboliteDetailDto {
     private String chineseName;
 
     private List<PropertyFieldDto> identifiers = new ArrayList<>();
+
+    private MetaboliteOverviewDto overview;
 
     private ChemicalDescriptionDto chemicalDescription;
 

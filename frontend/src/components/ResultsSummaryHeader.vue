@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import HighlightedText from './common/HighlightedText.vue'
 
 const props = defineProps({
   title: {
@@ -22,6 +23,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  highlightQueries: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const countLabel = computed(() => {
@@ -40,7 +45,9 @@ const countLabel = computed(() => {
         </span>
         <span class="results-summary__context">
           {{ props.context }}
-          <span v-if="props.query !== null" class="results-summary__query">“{{ props.query }}”</span>
+          <span v-if="props.query !== null" class="results-summary__query">
+            <HighlightedText :text="props.query" :queries="props.highlightQueries" />
+          </span>
         </span>
       </p>
     </div>

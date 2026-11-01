@@ -133,3 +133,35 @@ npm run dev                  # http://localhost:5173，/api 代理到 127.0.0.1:
 
 接口前缀可通过 `VITE_API_BASE_URL` 覆盖（默认 `/api`），见 `src/services/api/client.ts`。
 
+## 发布包与启停脚本
+
+`mvn package` 会在 `target/releases/` 生成发布包（zip），解压目录结构：
+
+```
+humeta/
+├── bin/     start.sh  stop.sh  status.sh  start.bat
+├── conf/    application.properties
+├── lib/     humeta-<version>.jar
+├── assets/
+└── readme.md
+```
+
+脚本按自身真实路径推导应用根目录，**与当前工作目录无关**，以下写法等价：
+
+```bash
+./bin/start.sh          # 从上级目录
+cd bin && ./start.sh    # 进入 bin 目录
+sh start.sh             # sh/dash 调用（脚本会自动切回 bash）
+bin/stop.sh
+bin/status.sh           # 退出码 0=运行中，1=未运行
+```
+
+脚本行为要点：
+
+- 启动前 `cd` 到应用根目录，保证 `file:./assets/` 等相对路径正确；
+- `-Dspring.config.additional-location=optional:file:./conf/`，外部 `conf/application.properties`
+  会覆盖 jar 内打包的那份；
+- `-Dfile.encoding=UTF-8`，避免中文乱码；
+- 已在运行（PID 存活）时拒绝重复启动；启动后 2 秒内退出会打印日志尾部并返回非 0；
+- 内存可通过 `HUMETA_MEM` 覆盖，默认 `-Xms500m -Xmx500m`。
+

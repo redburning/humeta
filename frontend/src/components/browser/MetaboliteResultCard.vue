@@ -1,5 +1,9 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import HighlightedText from '../common/HighlightedText.vue'
+
+const LENS_SIZE = 124
+const LENS_ZOOM = 2.2
 
 const props = defineProps({
   result: {
@@ -10,20 +14,229 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  queries: {
+    type: Array,
+    default: () => [],
+  },
 })
 
+const CROP_PADDING = 4
+
 const structureImageFailed = ref(false)
+const structureSource = ref('')
+const structureFrame = ref(null)
+const structureImage = ref(null)
+const lensVisible = ref(false)
+const lens = reactive({
+  size: 0,
+  left: 0,
+  top: 0,
+  backgroundWidth: 0,
+  backgroundHeight: 0,
+  backgroundX: 0,
+  backgroundY: 0,
+})
+
+let paintFrame = 0
+let pointerX = 0
+let pointerY = 0
+let structureObjectUrl = ''
+let structureRequestId = 0
+
+function hideLens() {
+  lensVisible.value = false
+  if (paintFrame) {
+    window.cancelAnimationFrame(paintFrame)
+    paintFrame = 0
+  }
+}
+
+function releaseStructureUrl() {
+  if (!structureObjectUrl) return
+  URL.revokeObjectURL(structureObjectUrl)
+  structureObjectUrl = ''
+}
+
+function useStructureSource(source) {
+  releaseStructureUrl()
+  structureSource.value = source
+}
+
+function handleImageError() {
+  if (structureObjectUrl && structureSource.value === structureObjectUrl) {
+    useStructureSource(props.result.structureImage)
+    return
+  }
+
+  structureImageFailed.value = true
+  hideLens()
+}
+
+function cropStructureSvg(source) {
+  const parsed = new DOMParser().parseFromString(source, 'image/svg+xml')
+  const svg = parsed.documentElement
+  if (!svg || svg.localName !== 'svg') return null
+
+  const holder = document.createElement('div')
+  holder.setAttribute('aria-hidden', 'true')
+  holder.style.cssText = 'position:fixed;left:-10000px;top:0;width:200px;height:200px;visibility:hidden;pointer-events:none;'
+
+  const liveSvg = document.importNode(svg, true)
+  holder.appendChild(liveSvg)
+  document.body.appendChild(holder)
+
+  let box = null
+  try {
+    box = liveSvg.getBBox()
+  } catch {
+    box = null
+  } finally {
+    holder.remove()
+  }
+
+  if (!box || !(box.width > 0) || !(box.height > 0)) return null
+
+  const viewBox = [
+    box.x - CROP_PADDING,
+    box.y - CROP_PADDING,
+    box.width + CROP_PADDING * 2,
+    box.height + CROP_PADDING * 2,
+  ]
+  if (!viewBox.every((value) => Number.isFinite(value))) return null
+
+  const cropped = svg.cloneNode(true)
+  cropped.setAttribute('viewBox', viewBox.join(' '))
+  cropped.setAttribute('width', String(viewBox[2]))
+  cropped.setAttribute('height', String(viewBox[3]))
+
+  return new XMLSerializer().serializeToString(cropped)
+}
+
+async function prepareStructureImage(url) {
+  const requestId = ++structureRequestId
+
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return
+
+    const source = await response.text()
+    if (requestId !== structureRequestId) return
+
+    const cropped = cropStructureSvg(source)
+    if (!cropped || requestId !== structureRequestId) return
+
+    const objectUrl = URL.createObjectURL(new Blob([cropped], { type: 'image/svg+xml' }))
+    if (requestId !== structureRequestId) {
+      URL.revokeObjectURL(objectUrl)
+      return
+    }
+
+    releaseStructureUrl()
+    structureObjectUrl = objectUrl
+    structureSource.value = objectUrl
+    hideLens()
+  } catch {
+    // Keep the original image as the fallback.
+  }
+}
 
 watch(
   () => props.result.structureImage,
-  () => {
+  (url) => {
     structureImageFailed.value = false
+    structureRequestId += 1
+    hideLens()
+    useStructureSource(url || '')
+
+    if (url) prepareStructureImage(url)
   },
+  { immediate: true },
 )
 
 const hasStructureImage = computed(() => (
   Boolean(props.result.structureImage) && !structureImageFailed.value
 ))
+
+function measureDrawnImage() {
+  const frame = structureFrame.value
+  const image = structureImage.value
+  if (!frame || !image || !image.complete) return null
+
+  const frameRect = frame.getBoundingClientRect()
+  const imageRect = image.getBoundingClientRect()
+  const naturalWidth = image.naturalWidth || imageRect.width
+  const naturalHeight = image.naturalHeight || imageRect.height
+  if (!naturalWidth || !naturalHeight) return null
+
+  const scale = Math.min(
+    imageRect.width / naturalWidth,
+    imageRect.height / naturalHeight,
+  )
+
+  return {
+    left: frameRect.left + frame.clientLeft,
+    top: frameRect.top + frame.clientTop,
+    frameWidth: frame.clientWidth,
+    frameHeight: frame.clientHeight,
+    x: imageRect.left - frameRect.left - frame.clientLeft
+      + (imageRect.width - naturalWidth * scale) / 2,
+    y: imageRect.top - frameRect.top - frame.clientTop
+      + (imageRect.height - naturalHeight * scale) / 2,
+    width: naturalWidth * scale,
+    height: naturalHeight * scale,
+  }
+}
+
+function paintLens() {
+  paintFrame = 0
+  const drawn = measureDrawnImage()
+  if (!drawn) {
+    lensVisible.value = false
+    return
+  }
+
+  const localX = pointerX - drawn.left
+  const localY = pointerY - drawn.top
+  const insideImage = localX >= drawn.x
+    && localX <= drawn.x + drawn.width
+    && localY >= drawn.y
+    && localY <= drawn.y + drawn.height
+
+  if (!insideImage) {
+    lensVisible.value = false
+    return
+  }
+
+  const { frameWidth, frameHeight } = drawn
+  const size = Math.min(LENS_SIZE, frameWidth, frameHeight)
+  const left = Math.min(Math.max(localX - size / 2, 0), frameWidth - size)
+  const top = Math.min(Math.max(localY - size / 2, 0), frameHeight - size)
+
+  lens.size = size
+  lens.left = left
+  lens.top = top
+  lens.backgroundWidth = drawn.width * LENS_ZOOM
+  lens.backgroundHeight = drawn.height * LENS_ZOOM
+  lens.backgroundX = (localX - left) - (localX - drawn.x) * LENS_ZOOM
+  lens.backgroundY = (localY - top) - (localY - drawn.y) * LENS_ZOOM
+  lensVisible.value = true
+}
+
+function handlePointerMove(event) {
+  if (event.pointerType === 'touch') return
+
+  pointerX = event.clientX
+  pointerY = event.clientY
+
+  if (paintFrame) return
+  paintFrame = window.requestAnimationFrame(paintLens)
+}
+
+onBeforeUnmount(() => {
+  structureRequestId += 1
+  releaseStructureUrl()
+  hideLens()
+})
 
 const MATCH_TYPE_LABELS = Object.freeze({
   exact: 'Exact',
@@ -48,6 +261,22 @@ const alsoMatched = computed(() => {
   ))
 })
 
+const HIDDEN_MATCH_FIELD_KEYS = Object.freeze({
+  'HMDB identifier': 'hmdb',
+  'KEGG identifier': 'kegg',
+  'ChEBI identifier': 'chebi',
+  'InChIKey': 'inchikey',
+})
+
+const hiddenMatchedField = computed(() => {
+  if (!props.explanation) return null
+
+  const key = HIDDEN_MATCH_FIELD_KEYS[props.explanation.primaryMatch]
+  const value = key ? props.result[key] : ''
+
+  return value ? { label: props.explanation.primaryMatch, value } : null
+})
+
 const fields = [
   { label: 'Chinese Name:', key: 'chineseName' },
   { label: 'Molecular Formula:', key: 'formula' },
@@ -61,7 +290,9 @@ const fields = [
   <article class="result-card">
     <header class="result-card__header">
       <span class="result-card__id">{{ props.result.id }}</span>
-      <h3>{{ props.result.name }}</h3>
+      <h3>
+        <HighlightedText :text="props.result.name" :queries="props.queries" />
+      </h3>
 
       <RouterLink
         :to="`/metabolites/${props.result.id}`"
@@ -75,6 +306,10 @@ const fields = [
     <div v-if="props.explanation" class="result-card__explanation">
       <p>Matched by: {{ matchDescription }}</p>
       <p v-if="alsoMatched.length">Also matched: {{ alsoMatched.join(', ') }}</p>
+      <p v-if="hiddenMatchedField" class="result-card__explanation-value">
+        {{ hiddenMatchedField.label }}:
+        <HighlightedText :text="hiddenMatchedField.value" :queries="props.queries" />
+      </p>
     </div>
 
     <div class="result-card__content">
@@ -87,20 +322,47 @@ const fields = [
         >
           <dt>{{ field.label }}</dt>
           <dd :title="field.key === 'smiles' ? props.result[field.key] : undefined">
-            {{ props.result[field.key] }}
+            <HighlightedText :text="props.result[field.key]" :queries="props.queries" />
           </dd>
         </div>
       </dl>
 
-      <div class="result-card__structure" role="img" :aria-label="`${props.result.name} 2D molecular structure`">
+      <div
+        ref="structureFrame"
+        class="result-card__structure"
+        :class="{ 'result-card__structure--zoomable': hasStructureImage }"
+        role="img"
+        :aria-label="`${props.result.name} 2D molecular structure`"
+        @pointerenter="handlePointerMove"
+        @pointermove="handlePointerMove"
+        @pointerleave="hideLens"
+        @pointercancel="hideLens"
+      >
         <img
-          v-if="hasStructureImage"
-          :src="props.result.structureImage"
+          v-if="hasStructureImage && structureSource"
+          ref="structureImage"
+          :src="structureSource"
           alt=""
           aria-hidden="true"
-          @error="structureImageFailed = true"
+          draggable="false"
+          @load="hideLens"
+          @error="handleImageError"
         />
         <span v-else class="result-card__structure-empty">No structure image</span>
+        <span
+          v-if="hasStructureImage && structureSource"
+          class="result-card__lens"
+          :class="{ 'result-card__lens--visible': lensVisible }"
+          aria-hidden="true"
+          :style="{
+            width: `${lens.size}px`,
+            height: `${lens.size}px`,
+            transform: `translate3d(${lens.left}px, ${lens.top}px, 0)`,
+            backgroundImage: `url('${structureSource}')`,
+            backgroundSize: `${lens.backgroundWidth}px ${lens.backgroundHeight}px`,
+            backgroundPosition: `${lens.backgroundX}px ${lens.backgroundY}px`,
+          }"
+        />
       </div>
     </div>
   </article>
@@ -201,8 +463,8 @@ const fields = [
   min-width: 0;
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(132px, 1fr);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.4fr) minmax(168px, 1fr);
+  align-items: stretch;
   gap: 16px;
   padding: 16px 14px;
 }
@@ -269,21 +531,49 @@ const fields = [
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  height: 120px;
+  max-width: 320px;
   overflow: hidden;
-  justify-self: end;
-  align-self: start;
+  justify-self: center;
+  align-self: stretch;
   border: 1px solid #d7e5eb;
   border-radius: 4px;
   background: #fff;
 }
 
+.result-card__structure--zoomable {
+  cursor: crosshair;
+}
+
 .result-card__structure img {
   position: absolute;
-  inset: 8px;
-  width: calc(100% - 16px);
-  height: calc(100% - 16px);
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
   object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.result-card__lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  box-shadow:
+    inset 0 0 0 2px rgba(8, 127, 190, 0.72),
+    0 6px 18px rgba(16, 63, 87, 0.26);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease-out;
+  will-change: transform, background-position;
+  z-index: 2;
+}
+
+.result-card__lens--visible {
+  opacity: 1;
 }
 
 .result-card__structure-empty {
@@ -309,10 +599,22 @@ const fields = [
   }
 
   .result-card__structure {
-    max-width: none;
-    height: clamp(140px, 42vw, 168px);
-    justify-self: stretch;
+    padding: 4px;
   }
 
+  .result-card__structure img {
+    position: static;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-card__lens {
+    transition: none;
+  }
 }
 </style>

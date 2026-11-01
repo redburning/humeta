@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import HumetaLoading from '../components/common/HumetaLoading.vue'
 import ChemicalDescription from '../components/metabolite/ChemicalDescription.vue'
 import DetailContentsNav from '../components/metabolite/DetailContentsNav.vue'
+import DiseaseAssociation from '../components/metabolite/DiseaseAssociation.vue'
 import DetailHero from '../components/metabolite/DetailHero.vue'
 import DetailSection from '../components/metabolite/DetailSection.vue'
 import PropertyTable from '../components/metabolite/PropertyTable.vue'
@@ -26,6 +27,7 @@ const SECTION_IDS = [
   'general-overview',
   'chemical-description',
   'chemical-taxonomy',
+  'disease-association',
 ]
 
 const contentsItems = computed(() => {
@@ -40,6 +42,7 @@ const contentsItems = computed(() => {
   items.push(
     { id: 'chemical-description', label: 'Chemical Description', icon: 'chemical', group: 'Chemistry' },
     { id: 'chemical-taxonomy', label: 'Chemical Taxonomy', icon: 'taxonomy' },
+    { id: 'disease-association', label: 'Disease Association', icon: 'disease', group: 'Associations' },
   )
   return items
 })
@@ -195,6 +198,10 @@ watch(
 
           <DetailSection id="chemical-taxonomy" title="Chemical Taxonomy" icon="taxonomy" :active="activeId === 'chemical-taxonomy'">
             <TaxonomyTree :trees="metabolite.taxonomy" />
+          </DetailSection>
+
+          <DetailSection id="disease-association" title="Disease Association" icon="disease" :active="activeId === 'disease-association'">
+            <DiseaseAssociation :metabolite-id="metabolite.id" :metabolite-name="metabolite.name" />
           </DetailSection>
         </div>
 

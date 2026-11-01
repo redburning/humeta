@@ -1,37 +1,47 @@
 @echo off
+setlocal
 chcp 65001 >nul 2>&1
 
-:: 设置基本路径
-set "SCRIPT_DIR=%~dp0"
-set "LI_HOME=%SCRIPT_DIR%..\"
-set "LB_CONF_PATH=%LI_HOME%conf\application.properties"
-set "JNA_TMP_DIR=%LI_HOME%tmp\"
+rem ---------------------------------------------------------------------------
+rem Resolve the application home from this script's own location
+rem (%~dp0 always ends with a backslash), so the script works from any cwd.
+rem ---------------------------------------------------------------------------
+for %%I in ("%~dp0..") do set "LI_HOME=%%~fI"
+set "LIB_DIR=%LI_HOME%\lib"
+set "CONF_DIR=%LI_HOME%\conf"
+set "JNA_TMP_DIR=%LI_HOME%\tmp"
 set "MEM=500m"
 
-:: 查找 jar 文件
-set "BFC_RUNNER="
-for %%f in ("%LI_HOME%lib\smol-*.jar") do (
-    set "BFC_RUNNER=%%f"
-    goto :found
+rem Locate the runnable jar (must exist, otherwise the literal wildcard would
+rem have been used as the jar path)
+set "JAR_FILE="
+for %%f in ("%LIB_DIR%\humeta-*.jar") do (
+    if exist "%%~f" if not defined JAR_FILE set "JAR_FILE=%%~f"
 )
 
-:: 检查文件是否存在
-echo Error: No smol-*.jar file found in %LI_HOME%lib\
-pause
-exit /b 1
+if not defined JAR_FILE (
+    echo Error: no humeta-*.jar found in %LIB_DIR%
+    echo        application home resolved to: %LI_HOME%
+    pause
+    exit /b 1
+)
 
-:found
-:: 确保临时目录存在
 if not exist "%JNA_TMP_DIR%" mkdir "%JNA_TMP_DIR%"
 
-:: 切换到应用程序根目录（确保相对路径 file:./assets/ 正确解析）
+rem The JVM working directory must be the application home, otherwise relative
+rem paths such as file:./assets/ would be resolved against the wrong directory.
 pushd "%LI_HOME%"
 
-echo Starting SMOL application...
-echo JAR file: %BFC_RUNNER%
+echo Starting HUMETA application...
+echo Home     : %LI_HOME%
+echo JAR file : %JAR_FILE%
 echo.
+echo Press Ctrl+C or close this window to stop the application.
 
-:: 前台运行，日志输出到控制台，关闭窗口即可停止
-java -Xms%MEM% -Xmx%MEM% -Djna.tmpdir="%JNA_TMP_DIR%" -Dsmol.home="%LI_HOME%" -jar "%BFC_RUNNER%"
+rem conf\application.properties overrides the copy packaged inside the jar
+java -Xms%MEM% -Xmx%MEM% -Dfile.encoding=UTF-8 -Djna.tmpdir="%JNA_TMP_DIR%" -Dhumeta.home="%LI_HOME%" "-Dspring.config.additional-location=optional:file:./conf/" -jar "%JAR_FILE%"
 
-popd 
+set "EXIT_CODE=%ERRORLEVEL%"
+
+popd
+endlocal & exit /b %EXIT_CODE%

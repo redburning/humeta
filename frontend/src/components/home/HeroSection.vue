@@ -60,7 +60,7 @@ import homeHeroBg from '@/assets/images/home/home-hero-bg-optimized.webp'
   font-size: clamp(48px, 4vw, 58px);
   font-weight: 700;
   line-height: 1.08;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.08em;
 }
 
 .hero-heading__subtitle {

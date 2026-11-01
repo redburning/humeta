@@ -730,7 +730,7 @@ input:focus {
   padding: 0 24px;
   color: white;
   background: var(--humeta-brand-primary);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 160ms ease;

@@ -5,7 +5,7 @@
 		<format>zip</format>
 	</formats>
 	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>smol</baseDirectory>
+	<baseDirectory>humeta-${project.version}</baseDirectory>
 	<fileSets>
 		<fileSet>
 			<directory>${basedir}/src/main/bin</directory>
@@ -31,7 +31,7 @@
 			<outputDirectory>./lib</outputDirectory>
 			<scope>runtime</scope>
 			<includes>
-				<include>redburning.github.io:smol</include>
+				<include>redburning.github.io:humeta</include>
 			</includes>
 		</dependencySet>
 	</dependencySets>

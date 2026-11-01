@@ -51,6 +51,7 @@ const searchQueries = computed(() => {
   })
 })
 const keyword = computed(() => searchQueries.value.map((query) => query.keyword).join(' '))
+const searchKeywords = computed(() => searchQueries.value.map((query) => query.keyword).filter(Boolean))
 const hasQuery = computed(() => searchQueries.value.length > 0)
 const productType = computed(() => normalizeBrowserProductType(queryValue(route.query.type)))
 const isLoadingPreview = computed(() => (
@@ -236,6 +237,7 @@ function changePage(page) {
               :count="resultCount"
               :context="hasQuery ? 'matched for' : 'available in Browser'"
               :query="hasQuery ? keyword : null"
+              :highlight-queries="searchKeywords"
             />
 
             <HumetaLoading
@@ -254,6 +256,7 @@ function changePage(page) {
                 :key="item.result.key"
                 :result="item.result"
                 :explanation="item.explanation"
+                :queries="searchKeywords"
               />
             </section>
 

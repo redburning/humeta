@@ -55,5 +55,8 @@ frontend/pnpm-debug.log*
 # 8160 个结构图 SVG（约 225 MB），建议单独部署；如需入库请删除本行
 frontend/public/images/structures/
 
+# 8160 个 MOL2 三维结构（约 40 MB），建议单独部署；如需入库请删除本行
+frontend/public/mol2/
+
 # MDAP 疾病关联 iframe（2587 个 HTML + shared_file，约 448 MB），建议单独部署
 frontend/public/disease-association/

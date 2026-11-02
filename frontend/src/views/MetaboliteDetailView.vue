@@ -193,7 +193,11 @@ watch(
           </DetailSection>
 
           <DetailSection id="chemical-description" title="Chemical Descriptors" icon="chemical" :active="activeId === 'chemical-description'">
-            <ChemicalDescription :description="metabolite.chemicalDescription" />
+            <ChemicalDescription
+              :description="metabolite.chemicalDescription"
+              :metabolite-id="metabolite.id"
+              :metabolite-name="metabolite.name"
+            />
           </DetailSection>
 
           <DetailSection id="chemical-taxonomy" title="Chemical Taxonomy" icon="taxonomy" :active="activeId === 'chemical-taxonomy'">

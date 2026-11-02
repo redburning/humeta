@@ -1,8 +1,13 @@
 <script setup>
 import { formatDetailLabel } from '../../utils/detailFieldPresentation'
 import DetailFieldValue from './DetailFieldValue.vue'
+import Structure3D from './Structure3D.vue'
 
-const props = defineProps({ description: { type: Object, required: true } })
+const props = defineProps({
+  description: { type: Object, required: true },
+  metaboliteId: { type: String, required: true },
+  metaboliteName: { type: String, default: '' },
+})
 </script>
 
 <template>
@@ -34,9 +39,11 @@ const props = defineProps({ description: { type: Object, required: true } })
           </div>
         </dd>
       </div>
-      <div class="chemical-description__row chemical-description__row--wide chemical-description__row--structure">
+      <div class="chemical-description__row chemical-description__row--wide chemical-description__row--structure chemical-description__row--structure3d">
         <dt title="3D Structure">3D Structure</dt>
-        <dd><div class="chemical-description__image-wrap"></div></dd>
+        <dd>
+          <Structure3D :metabolite-id="props.metaboliteId" :metabolite-name="props.metaboliteName" />
+        </dd>
       </div>
     </dl>
   </div>
@@ -56,6 +63,7 @@ const props = defineProps({ description: { type: Object, required: true } })
 .chemical-description__row--structure { grid-template-columns: var(--chemical-description-label-width) minmax(0, 1fr); }
 .chemical-description__row--structure dt { padding-top: 11px; align-items: flex-start; color: #718899; background: #eef6fa; font-size: var(--detail-font-field-label, 12px); }
 .chemical-description__row--structure dd { min-height: var(--chemical-description-structure-content-height); padding: 0; }
+.chemical-description__row--structure3d dd { min-height: 0; display: block; white-space: normal; }
 .chemical-description__image-wrap { position: relative; width: 100%; min-height: var(--chemical-description-structure-content-height); padding: 4px 20px; display: grid; place-items: center; background: #fbfdfe; }
 .chemical-description__image-wrap img { width: min(76%, 680px); height: var(--chemical-description-structure-image-height); object-fit: contain; }
 .chemical-description__image-wrap a { position: absolute; right: 12px; bottom: 8px; min-height: 30px; padding: 6px 10px; border: 1px solid #bfd3da; border-radius: 4px; color: #356a7f; background: #f5f9fa; font-size: 12px; text-decoration: none; }
@@ -68,6 +76,8 @@ const props = defineProps({ description: { type: Object, required: true } })
   .chemical-description__row--structure dt { min-height: 32px; padding: 6px 9px; align-items: center; }
   .chemical-description__image-wrap { padding: 8px 10px 20px; }
   .chemical-description__image-wrap img { width: 100%; }
+  .chemical-description__row--structure3d { grid-template-columns: minmax(0, 1fr); }
+  .chemical-description__row--structure3d dt { min-height: 32px; padding: 6px 9px; align-items: center; border-right: 1px solid var(--detail-border, #dce8ef); }
 }
 </style>
 

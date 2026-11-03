@@ -16,6 +16,15 @@ const displayValue = computed(() => (
     : String(props.value ?? '')
 ))
 
+const displayLines = computed(() => {
+  const parts = (Array.isArray(props.value) ? props.value : [props.value])
+    .flatMap((entry) => String(entry ?? '').split(/[;；]/))
+    .map((part) => part.trim())
+    .filter(Boolean)
+
+  return parts.length > 1 ? parts : null
+})
+
 async function copyValue() {
   let copied = false
 
@@ -56,7 +65,14 @@ onBeforeUnmount(() => window.clearTimeout(resetTimer))
 
 <template>
   <span class="detail-field-value">
-    <span class="detail-field-value__text" :title="displayValue">{{ displayValue }}</span>
+    <span
+      v-if="displayLines"
+      class="detail-field-value__text detail-field-value__text--multiline"
+      :title="displayValue"
+    >
+      <span v-for="(line, index) in displayLines" :key="index" class="detail-field-value__line">{{ line }}</span>
+    </span>
+    <span v-else class="detail-field-value__text" :title="displayValue">{{ displayValue }}</span>
     <button
       v-if="props.copyable"
       type="button"
@@ -93,6 +109,21 @@ onBeforeUnmount(() => window.clearTimeout(resetTimer))
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.detail-field-value__text--multiline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.detail-field-value__line {
+  display: block;
+  overflow-wrap: anywhere;
+  line-height: 25px;
 }
 
 .detail-field-value__copy {

@@ -43,7 +43,6 @@ const props = defineProps({
 .property-table__row:first-child {
   box-sizing: border-box;
   min-height: 38px;
-  border-left: 3px solid #087fbe;
 }
 
 .property-table__row--wide {

@@ -272,7 +272,7 @@ public class MetaboliteService {
         addIdentifier(fields, "ChEBI", entity.getChebi());
         addIdentifier(fields, "Common Abbreviations", entity.getCommonAbbreviations());
         addIdentifier(fields, "HMDB name (2026V5)", entity.getHmdbName2026V5());
-        addIdentifier(fields, "Metabolon name (2022NC)", entity.getMetabolonName2022NC());
+        addWideIdentifier(fields, "Metabolon name (2022NC)", entity.getMetabolonName2022NC());
         addWideIdentifier(fields, "Common Synonyms", entity.getCommonSynonyms());
         addWideIdentifier(fields, "Chinese Synonyms", entity.getChineseSynonyms());
         return fields;

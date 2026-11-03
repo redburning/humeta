@@ -84,6 +84,32 @@ watch(
   { immediate: true },
 )
 
+const BOLD_MARKUP_PATTERN = /\*\*([\s\S]+?)\*\*/g
+
+function parseBoldMarkup(paragraph) {
+  const text = String(paragraph ?? '')
+  const segments = []
+  let cursor = 0
+
+  for (const match of text.matchAll(BOLD_MARKUP_PATTERN)) {
+    if (match.index > cursor) {
+      segments.push({ text: text.slice(cursor, match.index), bold: false })
+    }
+    segments.push({ text: match[1], bold: true })
+    cursor = match.index + match[0].length
+  }
+
+  if (cursor < text.length) {
+    segments.push({ text: text.slice(cursor), bold: false })
+  }
+
+  return segments
+}
+
+const overviewParagraphs = computed(() =>
+  (metabolite.value?.overview?.description ?? []).map((paragraph) => parseBoldMarkup(paragraph)),
+)
+
 const overviewDescriptionRef = ref(null)
 const overviewExpanded = ref(false)
 const overviewOverflows = ref(false)
@@ -173,7 +199,7 @@ watch(
                 ref="overviewDescriptionRef"
                 class="overview__description"
                 :class="{ 'overview__description--collapsed': !overviewExpanded }"
-              ><template v-for="(paragraph, index) in metabolite.overview.description" :key="`${metabolite.id}-${index}`"><span>{{ paragraph }}</span><br v-if="index < metabolite.overview.description.length - 1"></template></p>
+              ><template v-for="(segments, index) in overviewParagraphs" :key="`${metabolite.id}-${index}`"><template v-for="(segment, segmentIndex) in segments" :key="segmentIndex"><strong v-if="segment.bold">{{ segment.text }}</strong><template v-else>{{ segment.text }}</template></template><br v-if="index < overviewParagraphs.length - 1"></template></p>
               <button
                 v-if="overviewOverflows"
                 type="button"

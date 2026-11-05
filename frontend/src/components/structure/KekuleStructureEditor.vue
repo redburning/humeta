@@ -1,5 +1,6 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { enableOpenBabelIo, loadKekuleRuntime } from '../../utils/structureEditorRuntime'
 
 const emit = defineEmits(['initialization-error', 'ready', 'structure-change'])
 
@@ -15,6 +16,7 @@ let resizeFrame = 0
 let summaryTimer = 0
 let activeBlobUrl = ''
 let isUnmounted = false
+let isOpenBabelReady = false
 
 const EMPTY_SUMMARY = Object.freeze({
   hasStructure: false,
@@ -137,7 +139,7 @@ function loadMolecule(molecule) {
 
 function importStructure(data, format, invalidMessage) {
   const Kekule = kekuleRef.value
-  if (!Kekule || !composerRef.value) throw new Error('Kekule.js is not ready yet.')
+  if (!Kekule || !composerRef.value || !isOpenBabelReady) throw new Error('Kekule.js is not ready yet.')
 
   let chemObj
   try {
@@ -161,56 +163,6 @@ function importStructure(data, format, invalidMessage) {
 
   loadMolecule(molecule)
   return { multiple: molecules.length > 1 }
-}
-
-function enableOpenBabelIo(Kekule) {
-  // Kekule 1.0.4 includes a native SMILES writer, but its SMILES reader is
-  // registered by the bundled OpenBabel adapter.
-  const basePath = import.meta.env.BASE_URL.endsWith('/')
-    ? import.meta.env.BASE_URL
-    : `${import.meta.env.BASE_URL}/`
-
-  Kekule.environment.setEnvVar('openbabel.path', `${basePath}kekule/openbabel/`)
-
-  const openBabelInitOptions = Kekule.OpenBabel.getObInitOptions()
-  openBabelInitOptions.creationOptions = {
-    print(message) {
-      if (String(message).includes('FS.trackingDelegate error on read file: /dev/stdin')) return
-      console.log(message)
-    },
-    // OpenBabel writes parser diagnostics to stderr even when the caller handles
-    // the failure. The page surfaces those failures as inline validation instead.
-    printErr() {},
-  }
-
-  return new Promise((resolve, reject) => {
-    Kekule.OpenBabel.loadObScript(document, (error) => {
-      if (error) {
-        reject(new Error('OpenBabel SMILES reader could not be loaded.'))
-        return
-      }
-
-      try {
-        if (!Kekule.OpenBabel.AdaptUtils.isAvailable()) {
-          throw new Error('OpenBabel SMILES reader is unavailable.')
-        }
-
-        const registrationHelper = new Kekule.OpenBabel.IORegHelper()
-        const converter = new (Kekule.OpenBabel.getClassCtor('ObConversionWrapper'))()
-
-        try {
-          const inputFormats = registrationHelper.listFormatInfo('in', converter)
-          registrationHelper.registerByInfos(inputFormats, 'in')
-        } finally {
-          converter.delete()
-        }
-
-        resolve()
-      } catch (registrationError) {
-        reject(registrationError)
-      }
-    })
-  })
 }
 
 function importSmiles(smiles) {
@@ -291,25 +243,22 @@ function downloadMol() {
 
 async function initializeComposer() {
   try {
-    const [module] = await Promise.all([
-      import('kekule'),
-      import('kekule/theme/default'),
-    ])
-    const Kekule = module.Kekule || module.default?.Kekule || module.default
+    const Kekule = await loadKekuleRuntime()
 
     if (!Kekule?.Editor?.Composer || isUnmounted) {
       throw new Error('Kekule Composer is unavailable.')
     }
 
-    await new Promise((resolve) => Kekule._ready(resolve))
     if (isUnmounted || !editorHost.value) return
 
-    await enableOpenBabelIo(Kekule)
-    if (isUnmounted || !editorHost.value) return
+    const openBabelReady = enableOpenBabelIo(Kekule)
+    // Observe failures even if this component unmounts or Composer creation fails.
+    openBabelReady.catch(() => {})
 
     kekuleRef.value = Kekule
 
     const composer = new Kekule.Editor.Composer(editorHost.value)
+    composerRef.value = composer
     const componentNames = Kekule.ChemWidget.ComponentWidgetNames
 
     composer.setPredefinedSetting('molOnly')
@@ -428,7 +377,6 @@ async function initializeComposer() {
     composer.setDimension('100%', '100%')
     composer.setObserveElemResize(false)
 
-    composerRef.value = composer
     editorInstance = composer.getEditor()
     editorInstance.addEventListener('operChange', handleOperationChange)
 
@@ -437,6 +385,12 @@ async function initializeComposer() {
     scheduleResize()
 
     isLoading.value = false
+    emitSummary()
+    // Flush the canvas before waiting for the optional SMILES runtime.
+    await nextTick()
+    await openBabelReady
+    if (isUnmounted || !editorHost.value) return
+    isOpenBabelReady = true
     emit('ready')
     emitSummary()
   } catch (error) {
@@ -451,6 +405,7 @@ onMounted(initializeComposer)
 
 onBeforeUnmount(() => {
   isUnmounted = true
+  isOpenBabelReady = false
   window.clearTimeout(summaryTimer)
   window.cancelAnimationFrame(resizeFrame)
   resizeObserver?.disconnect()

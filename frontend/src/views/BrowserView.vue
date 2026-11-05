@@ -31,7 +31,7 @@ import {
   parsePageQuery,
 } from '../utils/browserSearchResults'
 
-const RESULTS_PER_PAGE = 4
+const RESULTS_PER_PAGE = 10
 
 const route = useRoute()
 const router = useRouter()
@@ -233,6 +233,8 @@ function changePage(page) {
 
           <template v-else>
             <ResultsSummaryHeader
+              class="browser-results__summary"
+              :class="{ 'browser-results__summary--browse': !hasQuery }"
               :title="hasQuery ? 'Search results' : 'Browse results'"
               :count="resultCount"
               :context="hasQuery ? 'matched for' : 'available in Browser'"
@@ -292,7 +294,6 @@ function changePage(page) {
 
 <style scoped>
 .browser-page {
-  --browser-content-width: 1240px;
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -309,24 +310,46 @@ function changePage(page) {
 }
 
 .browser-results {
-  padding: 24px 0 44px;
+  padding: 8px 0 30px;
 }
 
 .browser-results__inner {
-  width: min(var(--browser-content-width), calc(100% - 48px));
+  width: calc(100% - 32px);
+  max-width: 1680px;
   margin-inline: auto;
-  padding: 20px 20px 18px;
   border: 1px solid #e6eef2;
   border-radius: 6px;
   background: #fff;
   box-shadow: none;
 }
 
+.browser-results__summary {
+  margin: 10px 20px 0;
+  padding-bottom: 7px;
+}
+
+.browser-results__summary--browse,
+.browser-results__summary :deep(h2) {
+  display: none;
+}
+
+.browser-results__summary :deep(.results-summary__meta) {
+  margin-top: 0;
+}
+
+.browser-results__summary :deep(.results-summary__query)::before {
+  content: '“';
+}
+
+.browser-results__summary :deep(.results-summary__query)::after {
+  content: '”';
+}
+
 .browser-results__grid {
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  gap: 12px;
 }
 
 .browser-results__empty {
@@ -382,10 +405,6 @@ function changePage(page) {
   margin-top: 20px;
 }
 
-.browser-results__pagination :deep(.result-pagination__jump) {
-  display: none;
-}
-
 @media (max-width: 919px) {
   .browser-results__grid {
     grid-template-columns: minmax(0, 1fr);
@@ -394,15 +413,7 @@ function changePage(page) {
 
 @media (max-width: 767px) {
   .browser-results {
-    padding: 24px 0 28px;
-  }
-
-  .browser-results__inner {
-    width: calc(100% - 40px);
-  }
-
-  .browser-results__grid {
-    gap: 24px;
+    padding-bottom: 19px;
   }
 
   .browser-results__empty {
@@ -415,9 +426,4 @@ function changePage(page) {
   }
 }
 
-@media (max-width: 600px) {
-  .browser-results__inner {
-    padding: 14px;
-  }
-}
 </style>

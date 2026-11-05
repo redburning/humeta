@@ -87,6 +87,21 @@ function cropStructureSvg(source) {
 
   let box = null
   try {
+    // Canvas backgrounds must not enlarge the drawing bounds. Only remove
+    // them from this measurement clone; the displayed SVG stays intact.
+    const viewport = liveSvg.viewBox.baseVal
+    if (viewport.width > 0 && viewport.height > 0) {
+      for (const child of Array.from(liveSvg.children)) {
+        if (child.localName !== 'rect' || getComputedStyle(child).stroke !== 'none') continue
+
+        const background = child.getBBox()
+        if (background.x <= viewport.x && background.y <= viewport.y
+          && background.x + background.width >= viewport.x + viewport.width
+          && background.y + background.height >= viewport.y + viewport.height) {
+          child.remove()
+        }
+      }
+    }
     box = liveSvg.getBBox()
   } catch {
     box = null
@@ -112,6 +127,90 @@ function cropStructureSvg(source) {
   return new XMLSerializer().serializeToString(cropped)
 }
 
+async function cropStructureRaster(blob) {
+  const sourceUrl = URL.createObjectURL(blob)
+  const image = new Image()
+
+  try {
+    await new Promise((resolve, reject) => {
+      image.onload = resolve
+      image.onerror = () => reject(new Error('Structure image could not be decoded.'))
+      image.src = sourceUrl
+    })
+
+    const width = image.naturalWidth
+    const height = image.naturalHeight
+    if (!width || !height || width * height > 16_000_000) return null
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const context = canvas.getContext('2d', { willReadFrequently: true })
+    if (!context) return null
+    context.drawImage(image, 0, 0)
+
+    const { data } = context.getImageData(0, 0, width, height)
+    const tolerance = 8
+    const colorAt = (offset) => [0, 1, 2].map((channel) => (
+      255 + (data[offset + channel] - 255) * data[offset + 3] / 255
+    ))
+    const corners = [0, (width - 1) * 4, (height - 1) * width * 4, (width * height - 1) * 4]
+      .map(colorAt)
+    const background = corners[0]
+    const uniformBackground = corners.every((color) => color.every((value, channel) => (
+      Math.abs(value - background[channel]) <= tolerance
+    )))
+    let left = width
+    let top = height
+    let right = -1
+    let bottom = -1
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const offset = (y * width + x) * 4
+        const alpha = data[offset + 3] / 255
+        if (!alpha) continue
+
+        let isBackground = true
+        for (let channel = 0; channel < 3; channel += 1) {
+          const color = 255 + (data[offset + channel] - 255) * alpha
+          if (Math.abs(color - (uniformBackground ? background[channel] : 255)) > tolerance) {
+            isBackground = false
+            break
+          }
+        }
+        if (isBackground) continue
+
+        left = Math.min(left, x)
+        top = Math.min(top, y)
+        right = Math.max(right, x)
+        bottom = Math.max(bottom, y)
+      }
+    }
+
+    if (right < left || bottom < top) return null
+    left = Math.max(0, left - CROP_PADDING)
+    top = Math.max(0, top - CROP_PADDING)
+    right = Math.min(width - 1, right + CROP_PADDING)
+    bottom = Math.min(height - 1, bottom + CROP_PADDING)
+    if (left === 0 && top === 0 && right === width - 1 && bottom === height - 1) return null
+
+    const cropped = document.createElement('canvas')
+    cropped.width = right - left + 1
+    cropped.height = bottom - top + 1
+    const croppedContext = cropped.getContext('2d')
+    if (!croppedContext) return null
+    croppedContext.drawImage(
+      canvas, left, top, cropped.width, cropped.height, 0, 0, cropped.width, cropped.height,
+    )
+    return await new Promise((resolve) => cropped.toBlob(resolve, 'image/png'))
+  } finally {
+    image.onload = null
+    image.onerror = null
+    URL.revokeObjectURL(sourceUrl)
+  }
+}
+
 async function prepareStructureImage(url) {
   const requestId = ++structureRequestId
 
@@ -119,13 +218,24 @@ async function prepareStructureImage(url) {
     const response = await fetch(url)
     if (!response.ok) return
 
-    const source = await response.text()
+    const source = await response.blob()
     if (requestId !== structureRequestId) return
 
-    const cropped = cropStructureSvg(source)
+    const prefix = await source.slice(0, 1024).text()
+    if (requestId !== structureRequestId) return
+
+    let cropped
+    if (source.type.includes('svg') || /<svg[\s>]/i.test(prefix)) {
+      const text = await source.text()
+      if (requestId !== structureRequestId) return
+      const svg = cropStructureSvg(text)
+      if (svg) cropped = new Blob([svg], { type: 'image/svg+xml' })
+    } else {
+      cropped = await cropStructureRaster(source)
+    }
     if (!cropped || requestId !== structureRequestId) return
 
-    const objectUrl = URL.createObjectURL(new Blob([cropped], { type: 'image/svg+xml' }))
+    const objectUrl = URL.createObjectURL(cropped)
     if (requestId !== structureRequestId) {
       URL.revokeObjectURL(objectUrl)
       return
@@ -282,7 +392,8 @@ const fields = [
   { label: 'Molecular Formula:', key: 'formula' },
   { label: 'Molecular Weight:', key: 'monoisotopicMw' },
   { label: 'Category:', key: 'category' },
-  { label: 'SMILES:', key: 'smiles' },
+  { label: 'PubChem:', key: 'pubchem' },
+  { label: 'HMDB:', key: 'hmdb' },
 ]
 </script>
 
@@ -387,7 +498,7 @@ const fields = [
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 11px;
-  padding: 11px 14px;
+  padding: 4px 14px;
   border-bottom: 1px solid var(--structure-divider, #edf2f4);
   background: #f5fafc;
 }
@@ -440,7 +551,7 @@ const fields = [
 
 .result-card__details {
   min-width: 82px;
-  min-height: 38px;
+  min-height: 32px;
   display: inline-grid;
   place-items: center;
   padding: 6px 13px;
@@ -466,14 +577,14 @@ const fields = [
   grid-template-columns: minmax(0, 1.4fr) minmax(168px, 1fr);
   align-items: stretch;
   gap: 16px;
-  padding: 16px 14px;
+  padding: 10px 14px;
 }
 
 .result-card__facts {
   min-width: 0;
   display: grid;
   align-content: start;
-  gap: 7px;
+  gap: 6px;
   margin: 0;
 }
 
@@ -532,6 +643,8 @@ const fields = [
   box-sizing: border-box;
   width: 100%;
   max-width: 320px;
+  min-height: 90px;
+  aspect-ratio: 2.2;
   overflow: hidden;
   justify-self: center;
   align-self: stretch;
@@ -587,29 +700,48 @@ const fields = [
   letter-spacing: 0.02em;
 }
 
-@media (max-width: 700px) {
-  .result-card__header {
-    padding: 12px 14px;
-  }
-
+@media (min-width: 920px) {
   .result-card__content {
-    grid-template-columns: 1fr;
-    gap: 18px;
-    padding: 16px 14px;
+    grid-template-columns: minmax(0, 1fr) clamp(147.2px, calc(47.4664% - 23.4664px), 326.4px);
   }
 
   .result-card__structure {
-    padding: 4px;
+    max-width: 341.6px;
+    aspect-ratio: 2.9333;
+  }
+}
+
+@media (max-width: 700px) {
+  .result-card__content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
   }
 
-  .result-card__structure img {
-    position: static;
-    inset: auto;
-    width: 100%;
-    height: auto;
-    display: block;
+  .result-card__structure {
+    height: clamp(105px, 31.5vw, 126px);
+    aspect-ratio: auto;
+  }
+}
+
+@media (max-width: 350px) {
+  .result-card__header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 8px;
   }
 
+  .result-card__id {
+    justify-self: start;
+  }
+
+  .result-card__header h3 {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .result-card__details {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

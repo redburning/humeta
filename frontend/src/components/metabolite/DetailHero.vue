@@ -23,7 +23,8 @@ const props = defineProps({ metabolite: { type: Object, required: true } })
   width: min(1560px, calc(100% - 48px));
   height: 74px;
   margin: 0 auto 12px;
-  background: #087fbe;
+  border-radius: 6px;
+  background: linear-gradient(to right, #087fbe, #72b3d6);
 }
 
 .detail-hero::before,

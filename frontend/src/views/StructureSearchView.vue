@@ -55,10 +55,11 @@ const searchResults = shallowRef([])
 const isStructureSearching = computed(() => searchState.value === 'searching')
 const { visibleLoading } = useDelayedLoading(isStructureSearching)
 
-const { clearCache, initialize, search } = useLocalStructureSearch()
+const { initialize, release, search } = useLocalStructureSearch()
 
 let searchToken = 0
 let searchFrame = 0
+let resolveSearchFrame = null
 let isUnmounted = false
 
 const feedbackClass = computed(() => `feedback-bar--${feedback.value.type}`)
@@ -89,9 +90,17 @@ function setFeedback(payload) {
   feedback.value = payload
 }
 
+function cancelSearchFrame() {
+  window.cancelAnimationFrame(searchFrame)
+  searchFrame = 0
+  const resolve = resolveSearchFrame
+  resolveSearchFrame = null
+  resolve?.()
+}
+
 function resetSearchState() {
   searchToken += 1
-  window.cancelAnimationFrame(searchFrame)
+  cancelSearchFrame()
   searchResults.value = []
   searchState.value = 'idle'
   currentPage.value = 1
@@ -105,10 +114,7 @@ function handleReady() {
   }
 
   try {
-    const datasetStatus = initialize(Kekule)
-    if (datasetStatus.availableCount !== 8 || datasetStatus.errors.length) {
-      throw new Error('The local demonstration dataset could not be prepared.')
-    }
+    initialize(Kekule)
 
     kekuleRef.value = Kekule
     isEditorReady.value = true
@@ -119,9 +125,9 @@ function handleReady() {
   }
 }
 
-function handleInitializationError() {
+function handleInitializationError(error) {
   isEditorReady.value = false
-  setFeedback({ type: 'error', message: 'Kekule.js initialization failed.' })
+  setFeedback({ type: 'error', message: error?.message || 'Kekule.js initialization failed.' })
 }
 
 function handleStructureChange(nextSummary) {
@@ -242,6 +248,7 @@ async function executeSearch({ scroll = true } = {}) {
     return
   }
 
+  cancelSearchFrame()
   const activeToken = ++searchToken
   currentPage.value = 1
   searchResults.value = []
@@ -253,8 +260,14 @@ async function executeSearch({ scroll = true } = {}) {
   }
 
   await nextTick()
+  if (isUnmounted || activeToken !== searchToken) return
   await new Promise((resolve) => {
-    searchFrame = window.requestAnimationFrame(resolve)
+    resolveSearchFrame = resolve
+    searchFrame = window.requestAnimationFrame(() => {
+      searchFrame = 0
+      resolveSearchFrame = null
+      resolve()
+    })
   })
   if (isUnmounted || activeToken !== searchToken) return
 
@@ -284,6 +297,7 @@ async function executeSearch({ scroll = true } = {}) {
 
   if (scroll) {
     await nextTick()
+    if (isUnmounted || activeToken !== searchToken) return
     scrollToResults()
   }
 }
@@ -331,8 +345,8 @@ watch(
 onBeforeUnmount(() => {
   isUnmounted = true
   searchToken += 1
-  window.cancelAnimationFrame(searchFrame)
-  clearCache()
+  cancelSearchFrame()
+  release()
   searchResults.value = []
   kekuleRef.value = null
 })

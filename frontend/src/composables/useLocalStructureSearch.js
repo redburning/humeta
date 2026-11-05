@@ -1,9 +1,13 @@
 import { shallowRef } from 'vue'
 import { structureSearchData } from '../data/structureSearchData'
 
+// These private caches contain only the existing eight fixed records. Runtime
+// identity keeps chemical objects from different Kekule instances isolated.
+const sessionMoleculeCaches = new WeakMap()
+
 export function useLocalStructureSearch() {
   const kekuleRef = shallowRef(null)
-  const moleculeCache = new Map()
+  let moleculeCache = null
   const parseErrors = new Map()
 
   function extractMolecule(Kekule, chemObj) {
@@ -17,7 +21,11 @@ export function useLocalStructureSearch() {
   function parseRecord(record) {
     const Kekule = kekuleRef.value
     if (!Kekule) throw new Error('Kekule.js is not ready yet.')
-    if (moleculeCache.has(record.key)) return moleculeCache.get(record.key)
+    const cached = moleculeCache.get(record.key)
+    if (cached?.smiles === record.smiles) {
+      parseErrors.delete(record.key)
+      return cached.molecule
+    }
 
     try {
       const chemObj = Kekule.IO.loadFormatData(record.smiles, 'smi')
@@ -25,7 +33,7 @@ export function useLocalStructureSearch() {
       if (!molecule?.getNodeCount?.()) throw new Error('No molecule was parsed.')
 
       molecule = Kekule.OpenBabel.StructUtils.generate2DStructure(molecule, {}) || molecule
-      moleculeCache.set(record.key, molecule)
+      moleculeCache.set(record.key, { smiles: record.smiles, molecule })
       parseErrors.delete(record.key)
       return molecule
     } catch {
@@ -36,11 +44,17 @@ export function useLocalStructureSearch() {
 
   function initialize(Kekule) {
     if (!Kekule) throw new Error('Kekule.js is not ready yet.')
-    if (kekuleRef.value && kekuleRef.value !== Kekule) moleculeCache.clear()
+    if (kekuleRef.value !== Kekule) parseErrors.clear()
     kekuleRef.value = Kekule
 
-    // Parse the small dataset once. Later searches reuse these plain Map entries.
-    structureSearchData.forEach(parseRecord)
+    moleculeCache = sessionMoleculeCaches.get(Kekule)
+    if (!moleculeCache) {
+      moleculeCache = new Map()
+      sessionMoleculeCaches.set(Kekule, moleculeCache)
+    }
+
+    // Prepare a record through the existing parse-and-gen2D path only when a
+    // search needs it. Binding a runtime performs no chemical preprocessing.
     return {
       availableCount: moleculeCache.size,
       errors: Array.from(parseErrors.values()),
@@ -58,13 +72,15 @@ export function useLocalStructureSearch() {
   }
 
   function createResult(record, molecule, match) {
-    return Object.freeze({ record, molecule, match: Object.freeze(match) })
+    return Object.freeze({ record, molecule: cloneForComparison(molecule), match: Object.freeze(match) })
   }
 
   function cloneForComparison(molecule) {
     // Kekule's comparison/search path standardizes structures internally and may
-    // mutate them. Keep cached preview molecules pristine across search modes.
-    return typeof molecule?.clone === 'function' ? molecule.clone() : molecule
+    // mutate them. Give comparison operations and result viewers their own
+    // copies so the session cache stays pristine across searches and mounts.
+    if (typeof molecule?.clone !== 'function') throw new Error('Unable to clone the demonstration structure.')
+    return molecule.clone()
   }
 
   function exactSearch(queryMolecule, options) {
@@ -141,13 +157,23 @@ export function useLocalStructureSearch() {
     if (!queryMolecule?.getNodeCount?.()) throw new Error('Draw or import a structure first.')
     if (!kekuleRef.value) throw new Error('Kekule.js is not ready yet.')
 
-    if (options.mode === 'substructure') return substructureSearch(queryMolecule, options)
-    if (options.mode === 'similarity') return similaritySearch(options)
-    return exactSearch(queryMolecule, options)
+    parseErrors.clear()
+    let results
+    if (options.mode === 'substructure') results = substructureSearch(queryMolecule, options)
+    else if (options.mode === 'similarity') results = similaritySearch(options)
+    else results = exactSearch(queryMolecule, options)
+
+    if (parseErrors.size) throw new Error('The local demonstration dataset could not be prepared.')
+    return results
   }
 
   function clearCache() {
-    moleculeCache.clear()
+    moleculeCache?.clear()
+    release()
+  }
+
+  function release() {
+    moleculeCache = null
     parseErrors.clear()
     kekuleRef.value = null
   }
@@ -155,6 +181,7 @@ export function useLocalStructureSearch() {
   return {
     clearCache,
     initialize,
+    release,
     search,
   }
 }

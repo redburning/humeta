@@ -56,7 +56,7 @@ const emit = defineEmits(['search'])
 }
 
 .browser-hero--landing {
-  min-height: 76px;
+  min-height: 54px;
   color: white;
   background: var(--humeta-hero-gradient);
 }
@@ -115,7 +115,7 @@ const emit = defineEmits(['search'])
 
 .browser-hero--landing .browser-hero__inner {
   width: min(1180px, calc(100% - 48px));
-  min-height: 76px;
+  min-height: 54px;
   padding-block: 5px;
   box-sizing: border-box;
   display: flex;
@@ -143,7 +143,7 @@ h1 {
 @media (max-width: 1199px) {
   .browser-hero--landing,
   .browser-hero--landing .browser-hero__inner {
-    min-height: 74px;
+    min-height: 52px;
   }
 
   .browser-hero--landing .browser-hero__inner {
@@ -153,7 +153,7 @@ h1 {
 
 @media (max-width: 767px) {
   .browser-hero--landing {
-    min-height: 74px;
+    min-height: 52px;
   }
 
   .browser-hero--results {
@@ -166,7 +166,7 @@ h1 {
 
   .browser-hero--landing .browser-hero__inner {
     width: calc(100% - 40px);
-    min-height: 74px;
+    min-height: 52px;
     padding-block: 4px;
   }
 

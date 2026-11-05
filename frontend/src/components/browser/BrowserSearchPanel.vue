@@ -775,20 +775,17 @@ input:focus {
 }
 
 .browser-search-form--landing {
-  --browser-search-detection-top: 44px;
+  --browser-search-detection-top: 27px;
   --browser-search-detection-right: 218px;
   --browser-search-controls-width: 194px;
   grid-template-columns: minmax(0, 1fr) 194px;
   width: 100%;
-  height: 66px;
-  min-height: 66px;
+  height: 44px;
+  min-height: 44px;
   box-sizing: border-box;
   border-color: var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(7, 94, 158, 0.07);
-  transition:
-    border-color var(--humeta-motion-base) var(--humeta-ease-standard),
-    box-shadow var(--humeta-motion-base) var(--humeta-ease-standard);
+  box-shadow: none;
 }
 
 .browser-search-form--landing.has-suggestions .browser-search-button {
@@ -801,9 +798,7 @@ input:focus {
 
 .browser-search-form--landing:focus-within {
   border-color: color-mix(in srgb, var(--humeta-action) 56%, var(--border-color));
-  box-shadow:
-    0 0 0 2px var(--humeta-focus-ring),
-    0 6px 20px rgba(7, 94, 158, 0.07);
+  box-shadow: 0 0 0 2px var(--humeta-focus-ring);
 }
 
 .browser-search-form--landing input,
@@ -823,6 +818,7 @@ input:focus {
   align-items: center;
   padding: 0;
   background: var(--humeta-brand-primary);
+  font-size: 14px;
 }
 
 .browser-search-form--landing .browser-search-button > span:first-child,
@@ -1003,7 +999,7 @@ input:focus {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background: white;
-    box-shadow: 0 4px 16px rgba(7, 94, 158, 0.06);
+    box-shadow: none;
   }
 
   .browser-search-form--landing input {
